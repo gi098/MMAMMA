@@ -90,3 +90,4 @@ export async function logoutFromFirebase(): Promise<{ success: boolean; error: s
 export function subscribeToAuthState(callback: (user: User | null) => void) {
   return onAuthStateChanged(auth, callback);
 }
+

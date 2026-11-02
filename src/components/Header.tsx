@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../theme/colors';
+import { colors, shadows } from '../theme/colors';
 
 interface HeaderProps {
   userEmail: string | null;
@@ -12,9 +13,14 @@ export const Header: React.FC<HeaderProps> = ({ userEmail, onLogout }) => {
   return (
     <View style={styles.container}>
       <View style={styles.brandRow}>
-        <View style={styles.logoBadge}>
-          <Ionicons name="book" size={20} color={colors.surface} />
-        </View>
+        <LinearGradient
+          colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.logoBadge}
+        >
+          <Ionicons name="book" size={20} color={colors.textInverse} />
+        </LinearGradient>
         <View style={styles.titleContainer}>
           <Text style={styles.appName}>BookShelf</Text>
           {Boolean(userEmail) && (
@@ -32,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ userEmail, onLogout }) => {
         accessibilityRole="button"
         accessibilityLabel="Logout"
       >
-        <Ionicons name="log-out-outline" size={18} color={colors.error} />
+        <Ionicons name="log-out-outline" size={17} color={colors.accent} />
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </View>
@@ -45,15 +51,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.surface,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    ...shadows.soft,
   },
   brandRow: {
     flexDirection: 'row',
@@ -62,27 +64,28 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   logoBadge: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    backgroundColor: colors.primary,
+    width: 42,
+    height: 42,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 12,
+    ...shadows.soft,
   },
   titleContainer: {
     flex: 1,
   },
   appName: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 19,
+    fontWeight: '800',
     color: colors.textPrimary,
     letterSpacing: 0.3,
   },
   userEmail: {
     fontSize: 12,
     color: colors.textSecondary,
-    marginTop: 1,
+    marginTop: 2,
+    fontWeight: '500',
   },
   logoutButton: {
     flexDirection: 'row',
@@ -90,14 +93,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.errorBg,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.errorBorder,
   },
   logoutText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: colors.error,
+    fontWeight: '700',
+    color: colors.accent,
     marginLeft: 4,
   },
 });

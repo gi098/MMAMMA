@@ -7,15 +7,16 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 import { RootStackParamList, BookFormData, Status } from '../types';
 import { useBooks } from '../context/BookContext';
 import { BookForm } from '../components/BookForm';
 import { ConfirmModal } from '../components/ConfirmModal';
-import { colors } from '../theme/colors';
+import { colors, shadows } from '../theme/colors';
 
 type DetailScreenRouteProp = RouteProp<RootStackParamList, 'Detail'>;
 type DetailScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Detail'>;
@@ -39,14 +40,19 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.notFoundContainer}>
-          <Ionicons name="alert-circle-outline" size={48} color={colors.error} />
+          <Ionicons name="alert-circle-outline" size={48} color={colors.accent} />
           <Text style={styles.notFoundText}>Book not found</Text>
           <TouchableOpacity
-            style={styles.backToListBtn}
+            style={styles.backToListTouch}
             onPress={() => navigation.goBack()}
-            activeOpacity={0.7}
+            activeOpacity={0.8}
           >
-            <Text style={styles.backToListText}>Back to Library</Text>
+            <LinearGradient
+              colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
+              style={styles.backToListGradient}
+            >
+              <Text style={styles.backToListText}>Back to Library</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -64,7 +70,21 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
     }
   };
 
+  const getGenreBadge = () => {
+    switch (book.genre) {
+      case 'Fiction':
+        return { bg: colors.genreFictionBg, text: colors.genreFiction };
+      case 'Non-Fiction':
+        return { bg: colors.genreNonFictionBg, text: colors.genreNonFiction };
+      case 'Academic':
+        return { bg: colors.genreAcademicBg, text: colors.genreAcademic };
+      default:
+        return { bg: colors.genreOtherBg, text: colors.genreOther };
+    }
+  };
+
   const statusStyle = getStatusBadge(book.status);
+  const genreStyle = getGenreBadge();
 
   const handleUpdate = async (formData: BookFormData) => {
     const res = await updateBook(book.id, formData);
@@ -139,18 +159,22 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
           <View style={styles.viewContainer}>
             {/* Main Header Card */}
             <View style={styles.headerCard}>
-              <View style={styles.bookIconBadge}>
-                <Ionicons name="book" size={32} color={colors.primary} />
-              </View>
+              <LinearGradient
+                colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.bookIconBadge}
+              >
+                <Ionicons name="book" size={32} color={colors.textInverse} />
+              </LinearGradient>
 
               <Text style={styles.title}>{book.title}</Text>
               <Text style={styles.author}>by {book.author}</Text>
 
               {/* Status and Genre Badges */}
               <View style={styles.badgesRow}>
-                <View style={styles.genreBadge}>
-                  <Ionicons name="folder-outline" size={14} color={colors.brown} style={styles.badgeIcon} />
-                  <Text style={styles.genreText}>{book.genre}</Text>
+                <View style={[styles.genreBadge, { backgroundColor: genreStyle.bg }]}>
+                  <Text style={[styles.genreText, { color: genreStyle.text }]}>{book.genre}</Text>
                 </View>
 
                 <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
@@ -161,7 +185,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
 
                 {book.favorite && (
                   <View style={styles.favBadge}>
-                    <Ionicons name="heart" size={14} color={colors.favorite} style={styles.badgeIcon} />
+                    <Ionicons name="heart" size={13} color={colors.favorite} style={styles.badgeIcon} />
                     <Text style={styles.favBadgeText}>Favorite</Text>
                   </View>
                 )}
@@ -178,7 +202,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
                       key={star}
                       name={star <= (book.rating ?? 0) ? 'star' : 'star-outline'}
                       size={22}
-                      color={colors.amber}
+                      color={colors.ratingStar}
                       style={styles.starIcon}
                     />
                   ))}
@@ -202,12 +226,19 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
             {/* Action Buttons: Edit and Delete */}
             <View style={styles.actionButtonsRow}>
               <TouchableOpacity
-                style={styles.editButton}
+                style={styles.editTouch}
                 onPress={() => setIsEditing(true)}
-                activeOpacity={0.8}
+                activeOpacity={0.9}
               >
-                <Ionicons name="create-outline" size={18} color={colors.textInverse} style={styles.btnIcon} />
-                <Text style={styles.editButtonText}>Edit Book</Text>
+                <LinearGradient
+                  colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.editGradient}
+                >
+                  <Ionicons name="create-outline" size={18} color={colors.textInverse} style={styles.btnIcon} />
+                  <Text style={styles.editButtonText}>Edit Book</Text>
+                </LinearGradient>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -215,7 +246,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
                 onPress={() => setShowDeleteModal(true)}
                 activeOpacity={0.8}
               >
-                <Ionicons name="trash-outline" size={18} color={colors.error} style={styles.btnIcon} />
+                <Ionicons name="trash-outline" size={18} color={colors.accent} style={styles.btnIcon} />
                 <Text style={styles.deleteButtonText}>Delete</Text>
               </TouchableOpacity>
             </View>
@@ -247,14 +278,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.surface,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+    ...shadows.soft,
   },
   topBarTitle: {
     fontSize: 17,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textPrimary,
   },
   navIconButton: {
@@ -272,20 +304,24 @@ const styles = StyleSheet.create({
   },
   notFoundText: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textPrimary,
     marginTop: 12,
     marginBottom: 20,
   },
-  backToListBtn: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 20,
+  backToListTouch: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    ...shadows.soft,
+  },
+  backToListGradient: {
+    paddingHorizontal: 22,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 14,
   },
   backToListText: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textInverse,
   },
   viewContainer: {
@@ -293,25 +329,21 @@ const styles = StyleSheet.create({
   },
   headerCard: {
     backgroundColor: colors.surface,
-    borderRadius: 18,
-    padding: 22,
+    borderRadius: 22,
+    padding: 24,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadows.card,
   },
   bookIconBadge: {
-    width: 64,
-    height: 64,
-    borderRadius: 20,
-    backgroundColor: colors.primarySoft,
+    width: 68,
+    height: 68,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
+    ...shadows.soft,
   },
   title: {
     fontSize: 22,
@@ -319,6 +351,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 4,
+    lineHeight: 28,
   },
   author: {
     fontSize: 15,
@@ -337,24 +370,22 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   genreBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.brownSoft,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E8DED1',
+    borderColor: 'rgba(242, 220, 226, 0.5)',
   },
   genreText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: colors.brown,
+    fontWeight: '700',
   },
   statusBadge: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 220, 226, 0.5)',
   },
   statusText: {
     fontSize: 13,
@@ -367,6 +398,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 220, 226, 0.5)',
   },
   favBadgeText: {
     fontSize: 12,
@@ -375,14 +408,15 @@ const styles = StyleSheet.create({
   },
   infoSection: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 18,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.soft,
   },
   sectionHeading: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -397,7 +431,7 @@ const styles = StyleSheet.create({
   },
   ratingScore: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textPrimary,
     marginLeft: 8,
   },
@@ -416,19 +450,18 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 8,
   },
-  editButton: {
+  editTouch: {
     flex: 2,
+    borderRadius: 14,
+    overflow: 'hidden',
+    ...shadows.soft,
+  },
+  editGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
     paddingVertical: 14,
     borderRadius: 14,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
   },
   deleteButton: {
     flex: 1,
@@ -446,12 +479,13 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textInverse,
+    letterSpacing: 0.2,
   },
   deleteButtonText: {
     fontSize: 15,
-    fontWeight: '700',
-    color: colors.error,
+    fontWeight: '800',
+    color: colors.accent,
   },
 });

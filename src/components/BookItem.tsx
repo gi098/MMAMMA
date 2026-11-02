@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book, Status } from '../types';
-import { colors } from '../theme/colors';
+import { colors, shadows } from '../theme/colors';
 
 interface BookItemProps {
   book: Book;
@@ -22,7 +22,21 @@ export const BookItem: React.FC<BookItemProps> = ({ book, onPress, onToggleFavor
     }
   };
 
+  const getGenreBadge = () => {
+    switch (book.genre) {
+      case 'Fiction':
+        return { bg: colors.genreFictionBg, text: colors.genreFiction };
+      case 'Non-Fiction':
+        return { bg: colors.genreNonFictionBg, text: colors.genreNonFiction };
+      case 'Academic':
+        return { bg: colors.genreAcademicBg, text: colors.genreAcademic };
+      default:
+        return { bg: colors.genreOtherBg, text: colors.genreOther };
+    }
+  };
+
   const statusStyle = getStatusBadge(book.status);
+  const genreStyle = getGenreBadge();
 
   return (
     <View testID="book-item" style={styles.card}>
@@ -62,9 +76,8 @@ export const BookItem: React.FC<BookItemProps> = ({ book, onPress, onToggleFavor
         {/* Badges Row: Genre, Status, Rating */}
         <View style={styles.badgesRow}>
           {/* Genre Badge */}
-          <View style={styles.genreBadge}>
-            <Ionicons name="folder-outline" size={13} color={colors.brown} style={styles.badgeIcon} />
-            <Text style={styles.genreText}>{book.genre}</Text>
+          <View style={[styles.genreBadge, { backgroundColor: genreStyle.bg }]}>
+            <Text style={[styles.genreText, { color: genreStyle.text }]}>{book.genre}</Text>
           </View>
 
           {/* Status Badge */}
@@ -77,14 +90,14 @@ export const BookItem: React.FC<BookItemProps> = ({ book, onPress, onToggleFavor
           {/* Rating (if provided) */}
           {book.rating !== null && (
             <View style={styles.ratingBadge}>
-              <Ionicons name="star" size={13} color={colors.amber} style={styles.badgeIcon} />
+              <Ionicons name="star" size={12} color={colors.ratingStar} style={styles.badgeIcon} />
               <Text style={styles.ratingText}>{book.rating}/5</Text>
             </View>
           )}
 
           {/* Details Arrow */}
           <View style={styles.arrowContainer}>
-            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+            <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
           </View>
         </View>
       </TouchableOpacity>
@@ -95,20 +108,16 @@ export const BookItem: React.FC<BookItemProps> = ({ book, onPress, onToggleFavor
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: 18,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
     borderColor: colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
+    ...shadows.soft,
     overflow: 'hidden',
   },
   mainTouchable: {
-    padding: 14,
+    padding: 16,
   },
   headerRow: {
     flexDirection: 'row',
@@ -121,14 +130,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textPrimary,
     lineHeight: 22,
+    letterSpacing: 0.1,
   },
   author: {
     fontSize: 13,
     color: colors.textSecondary,
-    marginTop: 2,
+    marginTop: 3,
     fontStyle: 'italic',
   },
   favoriteButton: {
@@ -140,7 +150,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 8,
     marginTop: 12,
-    paddingTop: 8,
+    paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: colors.surfaceSecondary,
   },
@@ -148,24 +158,22 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   genreBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.brownSoft,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E8DED1',
+    borderColor: 'rgba(242, 220, 226, 0.5)',
   },
   genreText: {
     fontSize: 12,
-    fontWeight: '600',
-    color: colors.brown,
+    fontWeight: '700',
   },
   statusBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 220, 226, 0.5)',
   },
   statusText: {
     fontSize: 12,
@@ -174,15 +182,17 @@ const styles = StyleSheet.create({
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.amberSoft,
+    backgroundColor: colors.ratingStarBg,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 220, 226, 0.5)',
   },
   ratingText: {
     fontSize: 12,
     fontWeight: '700',
-    color: colors.amber,
+    color: colors.ratingStar,
   },
   arrowContainer: {
     marginLeft: 'auto',

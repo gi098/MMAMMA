@@ -12,11 +12,13 @@ import {
   Platform,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 import { RootStackParamList } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { validateRegisterForm } from '../utils/validation';
-import { colors } from '../theme/colors';
+import { colors, shadows } from '../theme/colors';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Register'>;
 
@@ -72,6 +74,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar style="dark" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}
@@ -83,12 +86,15 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
             onPress={() => navigation.goBack()}
             activeOpacity={0.7}
           >
-            <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
 
           <View style={styles.header}>
+            <View style={styles.iconCircle}>
+              <Ionicons name="rose-outline" size={28} color={colors.accent} />
+            </View>
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join BookShelf to catalog and track your favorite reads.</Text>
+            <Text style={styles.subtitle}>Join BookShelf to catalog and cherish your favorite reads.</Text>
           </View>
 
           {/* Success Banner */}
@@ -197,16 +203,23 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
 
             {/* Submit Button */}
             <TouchableOpacity
-              style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+              style={[styles.submitTouch, loading && styles.submitButtonDisabled]}
               onPress={handleRegister}
               disabled={loading}
-              activeOpacity={0.8}
+              activeOpacity={0.9}
             >
-              {loading ? (
-                <ActivityIndicator size="small" color={colors.textInverse} />
-              ) : (
-                <Text style={styles.submitButtonText}>Register</Text>
-              )}
+              <LinearGradient
+                colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.submitGradient}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color={colors.textInverse} />
+                ) : (
+                  <Text style={styles.submitButtonText}>Register</Text>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
 
             {/* Link to Login */}
@@ -238,16 +251,29 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 14,
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.border,
     marginBottom: 16,
+    ...shadows.soft,
   },
   header: {
-    marginBottom: 24,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  iconCircle: {
+    width: 58,
+    height: 58,
+    borderRadius: 20,
+    backgroundColor: colors.surfaceSecondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   title: {
     fontSize: 28,
@@ -258,14 +284,16 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: colors.textSecondary,
+    textAlign: 'center',
     lineHeight: 20,
+    paddingHorizontal: 16,
   },
   successBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.successBg,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: colors.successBorder,
@@ -281,47 +309,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.errorBg,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: colors.errorBorder,
   },
   errorText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.error,
     marginLeft: 8,
     flex: 1,
   },
   formContainer: {
     backgroundColor: colors.surface,
-    padding: 20,
-    borderRadius: 18,
+    padding: 22,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadows.card,
   },
   inputGroup: {
     marginBottom: 16,
   },
   label: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textPrimary,
     marginBottom: 6,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surfaceSecondary,
-    borderRadius: 12,
-    borderWidth: 1,
+    backgroundColor: '#FFF9FA',
+    borderRadius: 14,
+    borderWidth: 1.5,
     borderColor: colors.border,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     height: 48,
   },
   inputIcon: {
@@ -336,26 +360,26 @@ const styles = StyleSheet.create({
   eyeButton: {
     padding: 6,
   },
-  submitButton: {
-    backgroundColor: colors.primary,
+  submitTouch: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    marginTop: 8,
+    ...shadows.soft,
+  },
+  submitGradient: {
     height: 48,
-    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
+    borderRadius: 14,
   },
   submitButtonDisabled: {
-    opacity: 0.7,
+    opacity: 0.6,
   },
   submitButtonText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textInverse,
+    letterSpacing: 0.2,
   },
   footerRow: {
     flexDirection: 'row',
@@ -368,7 +392,7 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     fontSize: 14,
-    fontWeight: '700',
-    color: colors.primary,
+    fontWeight: '800',
+    color: colors.accent,
   },
 });

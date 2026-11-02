@@ -9,8 +9,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BookFilters, GenreFilter, StatusFilter, Genre, Status, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
-import { colors } from '../theme/colors';
+import { BookFilters, GenreFilter, StatusFilter, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
+import { colors, shadows } from '../theme/colors';
 
 interface FilterBarProps {
   filters: BookFilters;
@@ -70,7 +70,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           <Ionicons
             name="options-outline"
             size={20}
-            color={hasActiveFilters ? colors.primaryDark : colors.textSecondary}
+            color={hasActiveFilters ? colors.accent : colors.textSecondary}
           />
         </TouchableOpacity>
       </View>
@@ -78,19 +78,20 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       {/* Favorites Only Switch Row */}
       <View style={styles.favoritesRow}>
         <View style={styles.switchLabelContainer}>
-          <Ionicons
-            name={filters.favoritesOnly ? 'heart' : 'heart-outline'}
-            size={18}
-            color={filters.favoritesOnly ? colors.favorite : colors.textSecondary}
-            style={styles.favIcon}
-          />
+          <View style={styles.heartCircle}>
+            <Ionicons
+              name={filters.favoritesOnly ? 'heart' : 'heart-outline'}
+              size={16}
+              color={filters.favoritesOnly ? colors.favorite : colors.textSecondary}
+            />
+          </View>
           <Text style={styles.switchLabel}>Favorites Only</Text>
         </View>
         <Switch
           value={filters.favoritesOnly}
           onValueChange={onFavoritesOnlyChange}
-          trackColor={{ false: colors.border, true: colors.favoriteBg }}
-          thumbColor={filters.favoritesOnly ? colors.favorite : '#f4f3f4'}
+          trackColor={{ false: colors.border, true: colors.secondary }}
+          thumbColor={filters.favoritesOnly ? colors.favorite : '#FFFFFF'}
         />
       </View>
 
@@ -144,7 +145,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           {/* Clear Filters Button */}
           {hasActiveFilters && (
             <TouchableOpacity style={styles.clearAllButton} onPress={onClear} activeOpacity={0.7}>
-              <Ionicons name="refresh-outline" size={16} color={colors.textSecondary} />
+              <Ionicons name="refresh-outline" size={16} color={colors.accent} />
               <Text style={styles.clearAllText}>Clear all filters</Text>
             </TouchableOpacity>
           )}
@@ -157,17 +158,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 14,
+    borderRadius: 20,
+    padding: 16,
     marginHorizontal: 16,
     marginVertical: 6,
     borderWidth: 1,
     borderColor: colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
+    ...shadows.soft,
   },
   searchRow: {
     flexDirection: 'row',
@@ -178,11 +175,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surfaceSecondary,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 44,
-    borderWidth: 1,
+    backgroundColor: '#FFF9FA',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    height: 46,
+    borderWidth: 1.5,
     borderColor: colors.border,
   },
   searchIcon: {
@@ -198,9 +195,9 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   toggleFilterBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     backgroundColor: colors.surfaceSecondary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -208,7 +205,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   toggleFilterBtnActive: {
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.secondarySoft,
     borderColor: colors.primary,
   },
   favoritesRow: {
@@ -216,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 10,
-    paddingTop: 8,
+    paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: colors.surfaceSecondary,
   },
@@ -224,28 +221,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  favIcon: {
+  heartCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.favoriteBg,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: 8,
   },
   switchLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textPrimary,
   },
   filterDetails: {
-    marginTop: 10,
-    paddingTop: 10,
+    marginTop: 12,
+    paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
   filterSection: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
   filterHeading: {
     fontSize: 12,
     fontWeight: '700',
     color: colors.textSecondary,
-    marginBottom: 6,
+    marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.4,
   },
@@ -277,15 +280,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
     marginTop: 4,
-    backgroundColor: colors.surfaceSecondary,
-    borderRadius: 8,
+    backgroundColor: colors.secondarySoft,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
     gap: 6,
   },
   clearAllText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: colors.textSecondary,
+    fontWeight: '700',
+    color: colors.accent,
   },
 });

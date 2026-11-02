@@ -7,10 +7,11 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { BookFormData, Genre, Status, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
 import { validateBookForm } from '../utils/validation';
-import { colors } from '../theme/colors';
+import { colors, shadows } from '../theme/colors';
 
 interface BookFormProps {
   initialValues?: BookFormData;
@@ -82,9 +83,17 @@ export const BookForm: React.FC<BookFormProps> = ({
 
   return (
     <View testID="book-form" style={styles.container}>
-      <Text style={styles.formTitle}>
-        {mode === 'add' ? 'Add New Book' : 'Edit Book Details'}
-      </Text>
+      <View style={styles.titleRow}>
+        <Ionicons
+          name={mode === 'add' ? 'sparkles' : 'create'}
+          size={18}
+          color={colors.accent}
+          style={styles.formTitleIcon}
+        />
+        <Text style={styles.formTitle}>
+          {mode === 'add' ? 'Add New Book' : 'Edit Book Details'}
+        </Text>
+      </View>
 
       {/* Success Banner */}
       {Boolean(serverSuccess) && (
@@ -243,7 +252,7 @@ export const BookForm: React.FC<BookFormProps> = ({
         <Text style={styles.label}>Notes (Optional)</Text>
         <TextInput
           style={[styles.input, styles.textArea]}
-          placeholder="Personal thoughts, quotes, or reflection..."
+          placeholder="Personal thoughts, quotes, or reflections..."
           placeholderTextColor={colors.textMuted}
           value={formData.notes}
           onChangeText={(val) => handleChange('notes', val)}
@@ -256,7 +265,7 @@ export const BookForm: React.FC<BookFormProps> = ({
 
       {/* Actions */}
       <View style={styles.actionRow}>
-        {onCancel && (
+        {Boolean(onCancel) && (
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={onCancel}
@@ -268,24 +277,31 @@ export const BookForm: React.FC<BookFormProps> = ({
         )}
 
         <TouchableOpacity
-          style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
+          style={[styles.submitTouchWrapper, submitting && styles.submitButtonDisabled]}
           onPress={handleSubmit}
           disabled={submitting}
-          activeOpacity={0.7}
+          activeOpacity={0.9}
         >
-          {submitting ? (
-            <ActivityIndicator size="small" color={colors.textInverse} />
-          ) : (
-            <>
-              <Ionicons
-                name={mode === 'add' ? 'add-circle-outline' : 'save-outline'}
-                size={18}
-                color={colors.textInverse}
-                style={styles.submitIcon}
-              />
-              <Text style={styles.submitButtonText}>{submitButtonText}</Text>
-            </>
-          )}
+          <LinearGradient
+            colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.submitGradient}
+          >
+            {submitting ? (
+              <ActivityIndicator size="small" color={colors.textInverse} />
+            ) : (
+              <>
+                <Ionicons
+                  name={mode === 'add' ? 'add-circle-outline' : 'save-outline'}
+                  size={18}
+                  color={colors.textInverse}
+                  style={styles.submitIcon}
+                />
+                <Text style={styles.submitButtonText}>{submitButtonText}</Text>
+              </>
+            )}
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </View>
@@ -295,99 +311,102 @@ export const BookForm: React.FC<BookFormProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: 20,
+    padding: 20,
     marginHorizontal: 16,
     marginVertical: 10,
     borderWidth: 1,
     borderColor: colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadows.card,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  formTitleIcon: {
+    marginRight: 8,
   },
   formTitle: {
     fontSize: 17,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textPrimary,
-    marginBottom: 14,
   },
   successBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.successBg,
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 12,
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 14,
     borderWidth: 1,
     borderColor: colors.successBorder,
   },
   successText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.success,
-    marginLeft: 6,
+    marginLeft: 8,
     flex: 1,
   },
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.errorBg,
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 12,
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 14,
     borderWidth: 1,
     borderColor: colors.errorBorder,
   },
   errorText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.error,
-    marginLeft: 6,
+    marginLeft: 8,
     flex: 1,
   },
   inputGroup: {
-    marginBottom: 12,
+    marginBottom: 14,
   },
   label: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textPrimary,
     marginBottom: 6,
   },
   requiredMark: {
-    color: colors.error,
+    color: colors.accent,
   },
   input: {
-    backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    backgroundColor: '#FFF9FA',
+    borderWidth: 1.5,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 12,
+    borderRadius: 12,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
     color: colors.textPrimary,
   },
   textArea: {
-    minHeight: 70,
+    minHeight: 74,
     textAlignVertical: 'top',
   },
   charHint: {
     fontSize: 11,
     color: colors.textMuted,
     textAlign: 'right',
-    marginTop: 2,
+    marginTop: 3,
   },
   optionsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 8,
   },
   optionPill: {
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingVertical: 7,
+    borderRadius: 20,
     backgroundColor: colors.surfaceSecondary,
     borderWidth: 1,
     borderColor: colors.border,
@@ -408,42 +427,47 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 10,
-    marginTop: 10,
+    marginTop: 12,
   },
   cancelButton: {
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingVertical: 11,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.surfaceSecondary,
+    backgroundColor: colors.secondarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
   cancelButtonText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textSecondary,
   },
-  submitButton: {
+  submitTouchWrapper: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    ...shadows.soft,
+  },
+  submitGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 10,
-    minWidth: 110,
+    paddingHorizontal: 20,
+    paddingVertical: 11,
+    borderRadius: 14,
+    minWidth: 120,
   },
   submitButtonDisabled: {
-    opacity: 0.7,
+    opacity: 0.6,
   },
   submitIcon: {
     marginRight: 6,
   },
   submitButtonText: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textInverse,
+    letterSpacing: 0.2,
   },
 });

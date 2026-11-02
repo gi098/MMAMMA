@@ -7,9 +7,9 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 import { RootStackParamList, Book } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useBooks } from '../context/BookContext';
@@ -19,7 +19,7 @@ import { FilterBar } from '../components/FilterBar';
 import { BookItem } from '../components/BookItem';
 import { BookForm } from '../components/BookForm';
 import { LoadingView } from '../components/LoadingView';
-import { colors } from '../theme/colors';
+import { colors, shadows } from '../theme/colors';
 
 type ListScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'List'>;
 
@@ -68,13 +68,13 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
           <Ionicons
             name={showAddForm ? 'close-circle-outline' : 'add-circle-outline'}
             size={20}
-            color={showAddForm ? colors.error : colors.primary}
+            color={showAddForm ? colors.accent : colors.accent}
             style={styles.addIcon}
           />
           <Text
             style={[
               styles.addBookToggleText,
-              showAddForm && { color: colors.error },
+              showAddForm && { color: colors.accent },
             ]}
           >
             {showAddForm ? 'Close Add Form' : 'Add New Book'}
@@ -110,7 +110,10 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
 
       {/* Books Section Title */}
       <View style={styles.listHeaderRow}>
-        <Text style={styles.listHeading}>Book Collection</Text>
+        <View style={styles.listHeadingWrapper}>
+          <Ionicons name="sparkles" size={14} color={colors.accent} style={styles.headingSparkle} />
+          <Text style={styles.listHeading}>Book Collection</Text>
+        </View>
         <Text style={styles.listSubheading}>
           {filteredBooks.length} {filteredBooks.length === 1 ? 'book' : 'books'}
         </Text>
@@ -126,7 +129,7 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
     return (
       <View style={styles.emptyContainer}>
         <View style={styles.emptyIconBadge}>
-          <Ionicons name="book-outline" size={36} color={colors.textMuted} />
+          <Ionicons name="rose-outline" size={38} color={colors.primary} />
         </View>
         <Text testID="books-empty" style={styles.emptyTitle}>
           No books found
@@ -134,7 +137,7 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
         <Text style={styles.emptySubtitle}>
           {filters.search || filters.genre !== 'All' || filters.status !== 'All' || filters.favoritesOnly
             ? 'Try adjusting your search or filters to see your books.'
-            : 'Start building your library by tapping "Add New Book" above.'}
+            : 'Start building your romantic reading nook by tapping "Add New Book" above.'}
         </Text>
       </View>
     );
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   listContent: {
-    paddingBottom: 32,
+    paddingBottom: 36,
   },
   addBookBar: {
     marginHorizontal: 16,
@@ -183,11 +186,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.surfaceSecondary,
     paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderRadius: 15,
+    borderWidth: 1.5,
     borderColor: colors.primary,
+    ...shadows.soft,
   },
   addBookToggleBtnActive: {
     backgroundColor: colors.errorBg,
@@ -198,8 +202,9 @@ const styles = StyleSheet.create({
   },
   addBookToggleText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: colors.primary,
+    fontWeight: '800',
+    color: colors.accent,
+    letterSpacing: 0.2,
   },
   listHeaderRow: {
     flexDirection: 'row',
@@ -209,16 +214,23 @@ const styles = StyleSheet.create({
     marginTop: 14,
     marginBottom: 6,
   },
+  listHeadingWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headingSparkle: {
+    marginRight: 6,
+  },
   listHeading: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '800',
     color: colors.textPrimary,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
   },
   listSubheading: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textSecondary,
   },
   emptyContainer: {
@@ -228,17 +240,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   emptyIconBadge: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     backgroundColor: colors.surfaceSecondary,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   emptyTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textPrimary,
     marginBottom: 6,
   },

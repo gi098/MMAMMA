@@ -61,3 +61,4 @@ export type RootStackParamList = {
   List: undefined;
   Detail: { bookId: string };
 };
+

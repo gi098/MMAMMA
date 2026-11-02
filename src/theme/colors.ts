@@ -1,48 +1,87 @@
 export const colors = {
   // Backgrounds
-  background: '#FAF8F5',       // Warm cream/ivory
-  surface: '#FFFFFF',          // Pure white card
-  surfaceSecondary: '#F3EDE6', // Muted paper
-  surfaceMuted: '#ECE5DC',     // Chip / pill background
+  background: '#FFF7F8',       // Trắng hồng nhẹ
+  surface: '#FFFFFF',          // Card Background
+  surfaceSecondary: '#FFF0F3', // Nền hồng nhạt rất nhẹ
+  surfaceMuted: '#FCE8ED',     // Pill / chip background
 
-  // Brand colors
-  primary: '#2D6A4F',          // Deep sage green
-  primaryLight: '#40916C',     // Sage highlight
-  primaryDark: '#1B4332',      // Forest deep
-  primarySoft: '#E8F5E9',      // Soft green tint
+  // Cloud & Rose brand colors
+  primary: '#EFA6B8',          // Hồng mây
+  primaryLight: '#F5C2CE',     // Hồng mây sáng
+  primaryDark: '#D88A9E',      // Hồng mây nhấn
+  primaryGradientStart: '#FAD1DC',
+  primaryGradientEnd: '#EFA6B8',
 
-  // Leather / Book accents
-  brown: '#8B5A2B',            // Vintage leather
-  brownLight: '#A77042',
-  brownSoft: '#F8F1EB',
-  amber: '#D97706',            // Amber highlight
-  amberSoft: '#FEF3C7',
+  secondary: '#F8DCE4',        // Hồng pastel
+  secondarySoft: '#FDF1F5',
 
-  // Status badges
-  statusToRead: '#D97706',
-  statusToReadBg: '#FEF3C7',
-  statusReading: '#2563EB',
-  statusReadingBg: '#EFF6FF',
-  statusFinished: '#16A34A',
-  statusFinishedBg: '#DCFCE7',
+  accent: '#C94F68',           // Đỏ hồng hoa hồng
+  accentSoft: '#FDECEF',
+  softRed: '#D97889',          // Đỏ dịu
 
   // Text
-  textPrimary: '#1F2937',      // Deep charcoal
-  textSecondary: '#6B7280',    // Slate gray
-  textMuted: '#9CA3AF',        // Light muted
+  textPrimary: '#513942',      // Nâu đỏ trầm
+  textSecondary: '#9A7E87',    // Muted dusty rose
+  textMuted: '#C4ADB5',        // Placeholder & subtle text
   textInverse: '#FFFFFF',
 
   // Borders & Dividers
-  border: '#E5DED5',
-  borderFocus: '#2D6A4F',
+  border: '#F2DCE2',           // Viền hồng nhạt
+  borderFocus: '#EFA6B8',
 
-  // System
-  error: '#DC2626',
-  errorBg: '#FEE2E2',
-  errorBorder: '#FCA5A5',
-  success: '#16A34A',
-  successBg: '#DCFCE7',
-  successBorder: '#86EFAC',
-  favorite: '#E11D48',
-  favoriteBg: '#FFE4E6',
+  // Status badges (Harmonious soft pastel tones)
+  statusToRead: '#B85E42',     // Soft terracotta
+  statusToReadBg: '#FDEEE8',
+  statusReading: '#7B599B',    // Soft lavender
+  statusReadingBg: '#F5ECFB',
+  statusFinished: '#3D8B6E',   // Soft sage mint
+  statusFinishedBg: '#EAF7F1',
+
+  // Genre badges
+  genreFiction: '#AD4D6D',
+  genreFictionBg: '#FDE7EF',
+  genreNonFiction: '#6E568F',
+  genreNonFictionBg: '#F1ECF8',
+  genreAcademic: '#3B798A',
+  genreAcademicBg: '#E7F4F7',
+  genreOther: '#876251',
+  genreOtherBg: '#F7EEE7',
+
+  // Rating & Favorites
+  ratingStar: '#E89D56',
+  ratingStarBg: '#FEF3E8',
+  favorite: '#C94F68',         // Đỏ hồng
+  favoriteBg: '#FDECEF',
+
+  // Alerts
+  error: '#C94F68',            // Đỏ hồng dịu
+  errorBg: '#FDEEF1',
+  errorBorder: '#F7C2CC',
+  success: '#3D8B6E',          // Xanh ngọc dịu
+  successBg: '#EAF7F1',
+  successBorder: '#BFE7D5',
+};
+
+export const shadows = {
+  soft: {
+    shadowColor: '#C94F68',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  card: {
+    shadowColor: '#A5495E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  floating: {
+    shadowColor: '#C94F68',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+    elevation: 5,
+  },
 };

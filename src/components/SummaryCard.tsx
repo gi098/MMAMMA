@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { BookSummary, Status } from '../types';
-import { colors } from '../theme/colors';
+import { colors, shadows } from '../theme/colors';
 
 interface SummaryCardProps {
   summary: BookSummary;
@@ -34,14 +35,23 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ summary }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Library Overview</Text>
+      <View style={styles.titleRow}>
+        <Ionicons name="sparkles" size={16} color={colors.accent} style={styles.sparkleIcon} />
+        <Text style={styles.sectionTitle}>Library Overview</Text>
+      </View>
 
       {/* Main Stats: Book Count & Favorite Count */}
       <View style={styles.topStatsRow}>
+        {/* Book Count Card */}
         <View style={styles.statBox}>
-          <View style={[styles.statIconBadge, { backgroundColor: colors.primarySoft }]}>
-            <Ionicons name="library" size={20} color={colors.primary} />
-          </View>
+          <LinearGradient
+            colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.statIconBadge}
+          >
+            <Ionicons name="library" size={18} color={colors.textInverse} />
+          </LinearGradient>
           <View style={styles.statInfo}>
             <Text style={styles.statLabel}>Total Books</Text>
             <Text testID="book-count" style={styles.statNumber}>
@@ -50,22 +60,23 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ summary }) => {
           </View>
         </View>
 
+        {/* Favorite Count Card */}
         <View style={styles.statBox}>
           <View style={[styles.statIconBadge, { backgroundColor: colors.favoriteBg }]}>
             <Ionicons name="heart" size={20} color={colors.favorite} />
           </View>
           <View style={styles.statInfo}>
             <Text style={styles.statLabel}>Favorites</Text>
-            <Text testID="favorite-count" style={styles.statNumber}>
+            <Text testID="favorite-count" style={[styles.statNumber, { color: colors.accent }]}>
               {summary.favoriteCount}
             </Text>
           </View>
         </View>
       </View>
 
-      {/* Status Breakdown */}
+      {/* Status Breakdown Section */}
       <View style={styles.statusDivider} />
-      <Text style={styles.statusSectionHeading}>Status Breakdown</Text>
+      <Text style={styles.statusSectionHeading}>Reading Progress</Text>
       <View style={styles.statusBreakdownRow}>
         {summary.statusCounts.map((item) => {
           const badge = getStatusBadgeStyle(item.status);
@@ -74,7 +85,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ summary }) => {
               key={item.status}
               style={[styles.statusPill, { backgroundColor: badge.bg }]}
             >
-              <Ionicons name={badge.icon} size={15} color={badge.text} style={styles.statusIcon} />
+              <Ionicons name={badge.icon} size={14} color={badge.text} style={styles.statusIcon} />
               <Text style={[styles.statusLabel, { color: badge.text }]}>
                 {item.status}
               </Text>
@@ -92,23 +103,27 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ summary }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 20,
+    padding: 18,
     marginHorizontal: 16,
     marginVertical: 10,
     borderWidth: 1,
     borderColor: colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadows.soft,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sparkleIcon: {
+    marginRight: 6,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.textPrimary,
-    marginBottom: 12,
+    letterSpacing: 0.2,
   },
   topStatsRow: {
     flexDirection: 'row',
@@ -121,12 +136,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surfaceSecondary,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   statIconBadge: {
     width: 40,
     height: 40,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
@@ -148,7 +165,7 @@ const styles = StyleSheet.create({
   statusDivider: {
     height: 1,
     backgroundColor: colors.border,
-    marginVertical: 12,
+    marginVertical: 14,
   },
   statusSectionHeading: {
     fontSize: 12,
@@ -156,7 +173,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   statusBreakdownRow: {
     flexDirection: 'row',
@@ -165,13 +182,15 @@ const styles = StyleSheet.create({
   },
   statusPill: {
     flex: 1,
-    minWidth: 100,
+    minWidth: 98,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
     paddingVertical: 7,
-    borderRadius: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 220, 226, 0.6)',
   },
   statusIcon: {
     marginRight: 4,

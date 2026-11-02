@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 15,
     color: colors.textSecondary,
-    fontWeight: '500',
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
 });

@@ -301,3 +301,4 @@ Khi nộp bài thi thực hành MMA301, sinh viên chụp các ảnh minh chứn
 10. **Ảnh 10 - Detail Screen**: Chi tiết cuốn sách đầy đủ điểm số sao, ghi chú; màn hình Edit và Modal xác nhận Delete.
 11. **Ảnh 11 - Firebase Console**: Chụp màn hình tab Authentication có các user đã tạo và tab Cloud Firestore có collection `books` với các document thực tế.
 12. **Ảnh 12 - Firestore Rules**: Chụp tab Rules trong Firebase Console hiển thị file `firestore.rules`.
+
