@@ -154,7 +154,11 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView testID="list-screen" style={styles.safeArea}>
       <StatusBar style="dark" />
-      <Header userEmail={currentUser?.email || null} onLogout={handleLogout} />
+      <Header
+        userEmail={currentUser?.email || null}
+        userName={currentUser?.displayName || null}
+        onLogout={handleLogout}
+      />
 
       <FlatList
         data={filteredBooks}

@@ -31,6 +31,7 @@ export interface BookFormData {
 export interface UserProfile {
   uid: string;
   email: string | null;
+  displayName?: string | null;
 }
 
 export type GenreFilter = 'All' | Genre;

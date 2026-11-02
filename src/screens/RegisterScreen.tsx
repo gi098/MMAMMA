@@ -29,6 +29,7 @@ interface RegisterScreenProps {
 export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const { register } = useAuth();
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -53,11 +54,12 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
     }
 
     setLoading(true);
-    const result = await register(email, password);
+    const result = await register(email, password, name);
     setLoading(false);
 
     if (result.success) {
       setSuccessMessage('Registration successful');
+      setName('');
       setEmail('');
       setPassword('');
       setConfirmPassword('');
@@ -117,6 +119,23 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
 
           {/* Form */}
           <View style={styles.formContainer}>
+            {/* Full Name Field */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Full Name</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="person-outline" size={18} color={colors.textSecondary} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Jane Austen"
+                  placeholderTextColor={colors.textMuted}
+                  value={name}
+                  onChangeText={setName}
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                />
+              </View>
+            </View>
+
             {/* Email Field */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email Address</Text>

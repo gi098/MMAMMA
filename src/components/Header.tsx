@@ -6,10 +6,11 @@ import { colors, shadows } from '../theme/colors';
 
 interface HeaderProps {
   userEmail: string | null;
+  userName?: string | null;
   onLogout: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ userEmail, onLogout }) => {
+export const Header: React.FC<HeaderProps> = ({ userEmail, userName, onLogout }) => {
   return (
     <View style={styles.container}>
       <View style={styles.brandRow}>
@@ -22,7 +23,9 @@ export const Header: React.FC<HeaderProps> = ({ userEmail, onLogout }) => {
           <Ionicons name="book" size={20} color={colors.textInverse} />
         </LinearGradient>
         <View style={styles.titleContainer}>
-          <Text style={styles.appName}>BookShelf</Text>
+          <Text style={styles.appName} numberOfLines={1}>
+            {userName ? `BookShelf • ${userName}` : 'BookShelf'}
+          </Text>
           {Boolean(userEmail) && (
             <Text style={styles.userEmail} numberOfLines={1} ellipsizeMode="middle">
               {userEmail}

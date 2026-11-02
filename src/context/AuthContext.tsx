@@ -12,7 +12,7 @@ interface AuthContextType {
   currentUser: UserProfile | null;
   loading: boolean;
   authError: string | null;
-  register: (email: string, pass: string) => Promise<{ success: boolean; error: string | null }>;
+  register: (email: string, pass: string, displayName?: string) => Promise<{ success: boolean; error: string | null }>;
   login: (email: string, pass: string) => Promise<{ success: boolean; error: string | null }>;
   logout: () => Promise<void>;
   clearAuthError: () => void;
@@ -31,6 +31,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCurrentUser({
           uid: user.uid,
           email: user.email,
+          displayName: user.displayName || null,
         });
       } else {
         setCurrentUser(null);
@@ -41,12 +42,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => unsubscribe();
   }, []);
 
-  const register = async (email: string, pass: string) => {
+  const register = async (email: string, pass: string, displayName?: string) => {
     setAuthError(null);
-    const result = await registerWithFirebase(email, pass);
+    const result = await registerWithFirebase(email, pass, displayName);
     if (result.error) {
       setAuthError(result.error);
       return { success: false, error: result.error };
+    }
+    if (result.user && displayName && displayName.trim()) {
+      setCurrentUser({
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName: displayName.trim(),
+      });
     }
     return { success: true, error: null };
   };

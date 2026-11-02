@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  updateProfile,
   User,
   AuthError,
 } from 'firebase/auth';
@@ -42,7 +43,8 @@ export function formatAuthError(error: unknown): string {
 
 export async function registerWithFirebase(
   email: string,
-  pass: string
+  pass: string,
+  displayName?: string
 ): Promise<AuthResponse> {
   if (!isFirebaseConfigured()) {
     return {
@@ -53,6 +55,13 @@ export async function registerWithFirebase(
 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), pass);
+    if (displayName && displayName.trim()) {
+      try {
+        await updateProfile(userCredential.user, { displayName: displayName.trim() });
+      } catch (profileErr) {
+        // Non-blocking if profile update fails
+      }
+    }
     return { user: userCredential.user, error: null };
   } catch (error) {
     return { user: null, error: formatAuthError(error) };
