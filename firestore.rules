@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidGenre(genre) {
+      return genre in ['Fiction', 'Non-Fiction', 'Academic', 'Other'];
+    }
+
+    function isValidStatus(status) {
+      return status in ['To Read', 'Reading', 'Finished'];
+    }
+
+    function isValidRating(rating) {
+      return rating == null || (rating is int && rating >= 0 && rating <= 5);
+    }
+
+    function isValidTitle(title) {
+      return title is string 
+        && title.size() > 0 
+        && title.size() <= 100
+        && title.trim().size() > 0;
+    }
+
+    function isValidAuthor(author) {
+      return author is string 
+        && author.size() > 0 
+        && author.size() <= 60
+        && author.trim().size() > 0;
+    }
+
+    function isValidNotes(notes) {
+      return notes is string && notes.size() <= 300;
+    }
+
+    function isValidBook(data) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'author', 'genre', 'status', 'rating', 'favorite', 'notes', 'createdAt'])
+        && data.keys().hasOnly(['id', 'userId', 'title', 'author', 'genre', 'status', 'rating', 'favorite', 'notes', 'createdAt'])
+        && data.id is string
+        && data.userId == request.auth.uid
+        && isValidTitle(data.title)
+        && isValidAuthor(data.author)
+        && isValidGenre(data.genre)
+        && isValidStatus(data.status)
+        && isValidRating(data.rating)
+        && data.favorite is bool
+        && isValidNotes(data.notes);
+    }
+
+    // Books collection
+    match /books/{bookId} {
+      // Only the owner can read their own books
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      // Create: Owner only, matches auth uid, valid schema, docId matches data.id
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.id == bookId
+        && isValidBook(request.resource.data);
+
+      // Update: Owner only, cannot change owner or document ID, valid schema
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.id == resource.data.id
+        && isValidBook(request.resource.data);
+
+      // Delete: Owner only
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+  }
+}
