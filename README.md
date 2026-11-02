@@ -13,6 +13,7 @@
   - **Cloud Firestore**: Lưu trữ và đồng bộ hóa thời gian thực (`books` collection).
   - **Firestore Security Rules**: Ràng buộc phân quyền dữ liệu và validation schema nghiêm ngặt (`firestore.rules`).
 - **Bảo mật biến môi trường**: Quản lý thông qua `.env` và `EXPO_PUBLIC_*`. Không hardcode API keys trong source code.
+- **Phong cách giao diện**: **Pink Cloud – Soft Romantic** kết hợp bảng màu hoàng hôn hồng mây pastel (`#EFA6B8`), đỏ hoa hồng tạo điểm nhấn (`#C94F68`) trên nền trắng hồng thanh khiết (`#FFF7F8`).
 
 ---
 
