@@ -49,13 +49,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setAuthError(result.error);
       return { success: false, error: result.error };
     }
-    if (result.user && displayName && displayName.trim()) {
-      setCurrentUser({
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: displayName.trim(),
-      });
-    }
     return { success: true, error: null };
   };
 

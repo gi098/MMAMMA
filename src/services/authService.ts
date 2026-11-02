@@ -62,6 +62,9 @@ export async function registerWithFirebase(
         // Non-blocking if profile update fails
       }
     }
+    // Sign out immediately so registration does not auto-login.
+    // This allows the user to see "Registration successful" and log in via Login screen.
+    await signOut(auth);
     return { user: userCredential.user, error: null };
   } catch (error) {
     return { user: null, error: formatAuthError(error) };
