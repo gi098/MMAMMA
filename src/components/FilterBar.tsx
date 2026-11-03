@@ -30,16 +30,23 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onClear,
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const [localSearch, setLocalSearch] = useState<string>(filters.search);
+  const [searchText, setSearchText] = useState<string>(filters.search);
 
+  // Debounce search query so user can type smoothly without Android keyboard stutter
   useEffect(() => {
-    setLocalSearch(filters.search);
-  }, [filters.search]);
+    const handler = setTimeout(() => {
+      onSearchChange(searchText);
+    }, 200);
 
-  const handleSearch = (text: string) => {
-    setLocalSearch(text);
-    onSearchChange(text);
-  };
+    return () => clearTimeout(handler);
+  }, [searchText]);
+
+  // Sync if cleared externally (e.g. from Clear All Filters)
+  useEffect(() => {
+    if (filters.search !== searchText && filters.search === '') {
+      setSearchText('');
+    }
+  }, [filters.search]);
 
   const allGenres: GenreFilter[] = ['All', ...GENRE_OPTIONS];
   const allStatuses: StatusFilter[] = ['All', ...STATUS_OPTIONS];
@@ -48,7 +55,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     filters.genre !== 'All' ||
     filters.status !== 'All' ||
     filters.favoritesOnly ||
-    filters.search.trim().length > 0;
+    searchText.trim().length > 0;
 
   return (
     <View style={styles.container}>
@@ -60,16 +67,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             style={styles.searchInput}
             placeholder="Search by Title or Director..."
             placeholderTextColor={colors.textMuted}
-            value={localSearch}
-            onChangeText={handleSearch}
+            value={searchText}
+            onChangeText={setSearchText}
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="search"
           />
-          {localSearch.length > 0 && (
+          {searchText.length > 0 && (
             <TouchableOpacity
               onPress={() => {
-                setLocalSearch('');
+                setSearchText('');
                 onSearchChange('');
               }}
               style={styles.clearSearchButton}
@@ -164,7 +171,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <TouchableOpacity
               style={styles.clearAllButton}
               onPress={() => {
-                setLocalSearch('');
+                setSearchText('');
                 onClear();
               }}
               activeOpacity={0.7}
