@@ -250,3 +250,4 @@ export async function deleteMovie(movieId: string): Promise<void> {
     await deleteDoc(movieDocRef);
   }
 }
+
