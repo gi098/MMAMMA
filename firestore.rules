@@ -66,8 +66,8 @@ service cloud.firestore {
 
     // Movies collection
     match /movies/{movieId} {
-      // Only the owner can read their own movies
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Only the owner can read their own movies (or check if document exists)
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
 
       // Create: Owner only, matches auth uid, valid schema, docId matches data.id
       allow create: if isAuthenticated()
