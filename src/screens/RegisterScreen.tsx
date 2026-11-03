@@ -5,16 +5,16 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
-  ScrollView,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { RootStackParamList } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { validateRegisterForm } from '../utils/validation';
@@ -37,12 +37,14 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [firebaseError, setFirebaseError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleRegister = async () => {
     setValidationError(null);
+    setFieldErrors({});
     setFirebaseError(null);
     setSuccessMessage(null);
 
@@ -50,6 +52,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
     const validation = validateRegisterForm(email, password, confirmPassword);
     if (!validation.isValid) {
       setValidationError(validation.firstError);
+      setFieldErrors(validation.errors);
       return;
     }
 
@@ -139,7 +142,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
             {/* Email Field */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email Address</Text>
-              <View style={styles.inputWrapper}>
+              <View style={[styles.inputWrapper, Boolean(fieldErrors.email) && styles.inputWrapperError]}>
                 <Ionicons name="mail-outline" size={18} color={colors.textSecondary} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
@@ -150,18 +153,28 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
                     setEmail(val);
                     if (validationError) setValidationError(null);
                     if (firebaseError) setFirebaseError(null);
+                    if (fieldErrors.email) {
+                      setFieldErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.email;
+                        return next;
+                      });
+                    }
                   }}
                   autoCapitalize="none"
                   keyboardType="email-address"
                   autoCorrect={false}
                 />
               </View>
+              {Boolean(fieldErrors.email) && (
+                <Text style={styles.fieldErrorText}>{fieldErrors.email}</Text>
+              )}
             </View>
 
             {/* Password Field */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Password</Text>
-              <View style={styles.inputWrapper}>
+              <View style={[styles.inputWrapper, Boolean(fieldErrors.password) && styles.inputWrapperError]}>
                 <Ionicons name="lock-closed-outline" size={18} color={colors.textSecondary} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
@@ -172,6 +185,13 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
                     setPassword(val);
                     if (validationError) setValidationError(null);
                     if (firebaseError) setFirebaseError(null);
+                    if (fieldErrors.password) {
+                      setFieldErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.password;
+                        return next;
+                      });
+                    }
                   }}
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
@@ -187,12 +207,15 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
                   />
                 </TouchableOpacity>
               </View>
+              {Boolean(fieldErrors.password) && (
+                <Text style={styles.fieldErrorText}>{fieldErrors.password}</Text>
+              )}
             </View>
 
             {/* Confirm Password Field */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Confirm Password</Text>
-              <View style={styles.inputWrapper}>
+              <View style={[styles.inputWrapper, Boolean(fieldErrors.confirmPassword) && styles.inputWrapperError]}>
                 <Ionicons name="shield-checkmark-outline" size={18} color={colors.textSecondary} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
@@ -203,6 +226,13 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
                     setConfirmPassword(val);
                     if (validationError) setValidationError(null);
                     if (firebaseError) setFirebaseError(null);
+                    if (fieldErrors.confirmPassword) {
+                      setFieldErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.confirmPassword;
+                        return next;
+                      });
+                    }
                   }}
                   secureTextEntry={!showConfirmPassword}
                   autoCapitalize="none"
@@ -218,6 +248,9 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
                   />
                 </TouchableOpacity>
               </View>
+              {Boolean(fieldErrors.confirmPassword) && (
+                <Text style={styles.fieldErrorText}>{fieldErrors.confirmPassword}</Text>
+              )}
             </View>
 
             {/* Submit Button */}
@@ -241,11 +274,11 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
               </LinearGradient>
             </TouchableOpacity>
 
-            {/* Link to Login */}
+            {/* Back to Login Link */}
             <View style={styles.footerRow}>
               <Text style={styles.footerText}>Already have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login')} activeOpacity={0.7}>
-                <Text style={styles.loginLink}>Login here</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.loginLink}>Log In</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -264,86 +297,89 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
   },
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 14,
+    borderRadius: 20,
     backgroundColor: colors.surface,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
     borderWidth: 1,
     borderColor: colors.border,
-    marginBottom: 16,
     ...shadows.soft,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginVertical: 20,
   },
   iconCircle: {
-    width: 58,
-    height: 58,
-    borderRadius: 20,
-    backgroundColor: colors.surfaceSecondary,
-    alignItems: 'center',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#FFF0F3',
     justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: 1.5,
+    borderColor: '#FAD1DC',
+    ...shadows.soft,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '800',
     color: colors.textPrimary,
-    marginBottom: 6,
+    letterSpacing: -0.3,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 20,
-    paddingHorizontal: 16,
+    marginTop: 6,
+    paddingHorizontal: 20,
+    lineHeight: 18,
   },
   successBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.successBg,
-    padding: 12,
-    borderRadius: 14,
-    marginBottom: 16,
-    borderWidth: 1,
     borderColor: colors.successBorder,
+    borderWidth: 1.5,
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 16,
   },
   successText: {
-    fontSize: 14,
-    fontWeight: '700',
     color: colors.success,
+    fontSize: 13,
+    fontWeight: '700',
     marginLeft: 8,
+    flex: 1,
   },
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.errorBg,
-    padding: 12,
-    borderRadius: 14,
-    marginBottom: 16,
-    borderWidth: 1,
     borderColor: colors.errorBorder,
+    borderWidth: 1.5,
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 16,
   },
   errorText: {
-    fontSize: 14,
-    fontWeight: '700',
     color: colors.error,
+    fontSize: 13,
+    fontWeight: '700',
     marginLeft: 8,
     flex: 1,
   },
   formContainer: {
     backgroundColor: colors.surface,
-    padding: 22,
     borderRadius: 22,
+    padding: 22,
     borderWidth: 1,
     borderColor: colors.border,
     ...shadows.card,
@@ -366,6 +402,17 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     paddingHorizontal: 14,
     height: 48,
+  },
+  inputWrapperError: {
+    borderColor: colors.error,
+    backgroundColor: '#FFF5F6',
+  },
+  fieldErrorText: {
+    color: colors.error,
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 4,
+    marginLeft: 4,
   },
   inputIcon: {
     marginRight: 10,

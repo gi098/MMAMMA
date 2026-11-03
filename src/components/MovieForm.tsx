@@ -7,15 +7,21 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { MovieFormData, Genre, Status, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  MovieFormData,
+  Genre,
+  Status,
+  GENRE_OPTIONS,
+  STATUS_OPTIONS,
+} from '../types';
 import { validateMovieForm } from '../utils/validation';
 import { colors, shadows } from '../theme/colors';
 
 interface MovieFormProps {
   initialValues?: MovieFormData;
-  onSubmit: (formData: MovieFormData) => Promise<{ success: boolean; error: string | null }>;
+  onSubmit: (formData: MovieFormData) => Promise<{ success: boolean; error?: string | null }>;
   onCancel?: () => void;
   submitButtonText?: string;
   mode?: 'add' | 'edit';
@@ -45,6 +51,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<MovieFormData>(initialValues);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
@@ -54,17 +61,26 @@ export const MovieForm: React.FC<MovieFormProps> = ({
   const handleChange = (field: keyof MovieFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (localError) setLocalError(null);
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
     if (onClearMessages) onClearMessages();
   };
 
   const handleSubmit = async () => {
     setLocalError(null);
+    setFieldErrors({});
     if (onClearMessages) onClearMessages();
 
     // Client-side validation
     const validation = validateMovieForm(formData);
     if (!validation.isValid) {
       setLocalError(validation.firstError);
+      setFieldErrors(validation.errors);
       return;
     }
 
@@ -120,7 +136,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({
           Title <Text style={styles.requiredMark}>*</Text>
         </Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, Boolean(fieldErrors.title) && styles.inputError]}
           placeholder="e.g. Inception"
           placeholderTextColor={colors.textMuted}
           value={formData.title}
@@ -128,6 +144,9 @@ export const MovieForm: React.FC<MovieFormProps> = ({
           maxLength={110}
         />
         <Text style={styles.charHint}>{formData.title.length}/100</Text>
+        {Boolean(fieldErrors.title) && (
+          <Text style={styles.fieldErrorText}>{fieldErrors.title}</Text>
+        )}
       </View>
 
       {/* Director Field */}
@@ -136,7 +155,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({
           Director <Text style={styles.requiredMark}>*</Text>
         </Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, Boolean(fieldErrors.director) && styles.inputError]}
           placeholder="e.g. Christopher Nolan"
           placeholderTextColor={colors.textMuted}
           value={formData.director}
@@ -144,6 +163,9 @@ export const MovieForm: React.FC<MovieFormProps> = ({
           maxLength={70}
         />
         <Text style={styles.charHint}>{formData.director.length}/60</Text>
+        {Boolean(fieldErrors.director) && (
+          <Text style={styles.fieldErrorText}>{fieldErrors.director}</Text>
+        )}
       </View>
 
       {/* Genre Field */}
@@ -187,6 +209,9 @@ export const MovieForm: React.FC<MovieFormProps> = ({
             );
           })}
         </View>
+        {Boolean(fieldErrors.genre) && (
+          <Text style={styles.fieldErrorText}>{fieldErrors.genre}</Text>
+        )}
       </View>
 
       {/* Status Field */}
@@ -230,13 +255,16 @@ export const MovieForm: React.FC<MovieFormProps> = ({
             );
           })}
         </View>
+        {Boolean(fieldErrors.status) && (
+          <Text style={styles.fieldErrorText}>{fieldErrors.status}</Text>
+        )}
       </View>
 
       {/* Rating Field (optional) */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Rating (Optional: 0 to 5)</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, Boolean(fieldErrors.rating) && styles.inputError]}
           placeholder="e.g. 5"
           placeholderTextColor={colors.textMuted}
           value={formData.rating}
@@ -244,13 +272,16 @@ export const MovieForm: React.FC<MovieFormProps> = ({
           keyboardType="numeric"
           maxLength={2}
         />
+        {Boolean(fieldErrors.rating) && (
+          <Text style={styles.fieldErrorText}>{fieldErrors.rating}</Text>
+        )}
       </View>
 
       {/* Notes Field (optional) */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Notes (Optional)</Text>
         <TextInput
-          style={[styles.input, styles.textArea]}
+          style={[styles.input, styles.textArea, Boolean(fieldErrors.notes) && styles.inputError]}
           placeholder="Personal thoughts, quotes, or review..."
           placeholderTextColor={colors.textMuted}
           value={formData.notes}
@@ -260,6 +291,9 @@ export const MovieForm: React.FC<MovieFormProps> = ({
           maxLength={310}
         />
         <Text style={styles.charHint}>{formData.notes.length}/300</Text>
+        {Boolean(fieldErrors.notes) && (
+          <Text style={styles.fieldErrorText}>{fieldErrors.notes}</Text>
+        )}
       </View>
 
       {/* Actions */}
@@ -313,7 +347,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     marginHorizontal: 16,
-    marginVertical: 10,
+    marginVertical: 12,
     borderWidth: 1,
     borderColor: colors.border,
     ...shadows.card,
@@ -321,7 +355,7 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   formTitleIcon: {
     marginRight: 8,
@@ -330,38 +364,38 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '800',
     color: colors.textPrimary,
+    letterSpacing: -0.2,
   },
   successBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.successBg,
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 14,
-    borderWidth: 1,
     borderColor: colors.successBorder,
+    borderWidth: 1.5,
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 14,
   },
   successText: {
+    color: colors.success,
     fontSize: 13,
     fontWeight: '700',
-    color: colors.success,
     marginLeft: 8,
-    flex: 1,
   },
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.errorBg,
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 14,
-    borderWidth: 1,
     borderColor: colors.errorBorder,
+    borderWidth: 1.5,
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 14,
   },
   errorText: {
+    color: colors.error,
     fontSize: 13,
     fontWeight: '700',
-    color: colors.error,
     marginLeft: 8,
     flex: 1,
   },
@@ -386,6 +420,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 14,
     color: colors.textPrimary,
+  },
+  inputError: {
+    borderColor: colors.error,
+    backgroundColor: '#FFF5F6',
+  },
+  fieldErrorText: {
+    color: colors.error,
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 4,
+    marginLeft: 4,
   },
   textArea: {
     minHeight: 74,
