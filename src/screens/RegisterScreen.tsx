@@ -66,10 +66,10 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
       setEmail('');
       setPassword('');
       setConfirmPassword('');
-      // Delay slightly and navigate to Login
+      // Delay 3s so user has ample time to take screenshot, then navigate to Login
       setTimeout(() => {
         navigation.navigate('Login');
-      }, 1500);
+      }, 3000);
     } else {
       setFirebaseError(result.error);
     }
