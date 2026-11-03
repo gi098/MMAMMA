@@ -59,6 +59,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setAuthError(result.error);
       return { success: false, error: result.error };
     }
+    if (result.user) {
+      setCurrentUser({
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName: result.user.displayName || null,
+      });
+    }
     return { success: true, error: null };
   };
 
@@ -96,4 +103,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-
