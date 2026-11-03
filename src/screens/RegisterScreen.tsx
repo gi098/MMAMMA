@@ -66,10 +66,8 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
       setEmail('');
       setPassword('');
       setConfirmPassword('');
-      // Delay 3s so user has ample time to take screenshot, then navigate to Login
-      setTimeout(() => {
-        navigation.navigate('Login');
-      }, 3000);
+      // Keep message on screen indefinitely so user can easily capture screenshot #5.
+      // User will manually tap "Continue to Login →" when ready.
     } else {
       setFirebaseError(result.error);
     }
@@ -105,10 +103,22 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
           {/* Success Banner */}
           {Boolean(successMessage) && (
             <View style={styles.successBox}>
-              <Ionicons name="checkmark-circle" size={20} color={colors.success} />
-              <Text testID="form-success" style={styles.successText}>
-                {successMessage}
+              <View style={styles.successRow}>
+                <Ionicons name="checkmark-circle" size={22} color={colors.success} />
+                <Text testID="form-success" style={styles.successText}>
+                  {successMessage}
+                </Text>
+              </View>
+              <Text style={styles.successSubtext}>
+                Your account has been created. Tap below to log in.
               </Text>
+              <TouchableOpacity
+                style={styles.continueButton}
+                onPress={() => navigation.navigate('Login')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.continueButtonText}>Continue to Login →</Text>
+              </TouchableOpacity>
             </View>
           )}
 
@@ -343,21 +353,44 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   successBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: colors.successBg,
     borderColor: colors.successBorder,
     borderWidth: 1.5,
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 16,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 18,
+    ...shadows.soft,
+  },
+  successRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   successText: {
     color: colors.success,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '800',
     marginLeft: 8,
     flex: 1,
+  },
+  successSubtext: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    marginTop: 6,
+    marginLeft: 30,
+  },
+  continueButton: {
+    backgroundColor: colors.success,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    alignSelf: 'flex-start',
+    marginTop: 10,
+    marginLeft: 30,
+  },
+  continueButtonText: {
+    color: colors.textInverse,
+    fontSize: 12,
+    fontWeight: '800',
   },
   errorBox: {
     flexDirection: 'row',
