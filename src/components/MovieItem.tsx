@@ -1,21 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Book, Status } from '../types';
+import { Movie, Status } from '../types';
 import { colors, shadows } from '../theme/colors';
 
-interface BookItemProps {
-  book: Book;
+interface MovieItemProps {
+  movie: Movie;
   onPress: () => void;
   onToggleFavorite: () => void;
 }
 
-export const BookItem: React.FC<BookItemProps> = ({ book, onPress, onToggleFavorite }) => {
+export const MovieItem: React.FC<MovieItemProps> = ({ movie, onPress, onToggleFavorite }) => {
   const getStatusBadge = (status: Status) => {
     switch (status) {
-      case 'To Read':
+      case 'To Watch':
         return { bg: colors.statusToReadBg, text: colors.statusToRead };
-      case 'Reading':
+      case 'Watching':
         return { bg: colors.statusReadingBg, text: colors.statusReading };
       case 'Finished':
         return { bg: colors.statusFinishedBg, text: colors.statusFinished };
@@ -23,37 +23,45 @@ export const BookItem: React.FC<BookItemProps> = ({ book, onPress, onToggleFavor
   };
 
   const getGenreBadge = () => {
-    switch (book.genre) {
-      case 'Fiction':
-        return { bg: colors.genreFictionBg, text: colors.genreFiction };
-      case 'Non-Fiction':
-        return { bg: colors.genreNonFictionBg, text: colors.genreNonFiction };
-      case 'Academic':
-        return { bg: colors.genreAcademicBg, text: colors.genreAcademic };
+    switch (movie.genre) {
+      case 'Action':
+        return { bg: colors.genreActionBg, text: colors.genreAction };
+      case 'Comedy':
+        return { bg: colors.genreComedyBg, text: colors.genreComedy };
+      case 'Drama':
+        return { bg: colors.genreDramaBg, text: colors.genreDrama };
+      case 'Sci-Fi':
+        return { bg: colors.genreSciFiBg, text: colors.genreSciFi };
+      case 'Animation':
+        return { bg: colors.genreAnimationBg, text: colors.genreAnimation };
+      case 'Romance':
+        return { bg: colors.genreRomanceBg, text: colors.genreRomance };
+      case 'Documentary':
+        return { bg: colors.genreDocumentaryBg, text: colors.genreDocumentary };
       default:
         return { bg: colors.genreOtherBg, text: colors.genreOther };
     }
   };
 
-  const statusStyle = getStatusBadge(book.status);
+  const statusStyle = getStatusBadge(movie.status);
   const genreStyle = getGenreBadge();
 
   return (
-    <View testID="book-item" style={styles.card}>
+    <View testID="movie-item" style={styles.card}>
       <TouchableOpacity
         style={styles.mainTouchable}
         onPress={onPress}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel={`View details for ${book.title}`}
+        accessibilityLabel={`View details for ${movie.title}`}
       >
         <View style={styles.headerRow}>
           <View style={styles.titleContainer}>
             <Text style={styles.title} numberOfLines={2}>
-              {book.title}
+              {movie.title}
             </Text>
-            <Text style={styles.author} numberOfLines={1}>
-              by {book.author}
+            <Text style={styles.director} numberOfLines={1}>
+              Directed by {movie.director}
             </Text>
           </View>
 
@@ -63,12 +71,12 @@ export const BookItem: React.FC<BookItemProps> = ({ book, onPress, onToggleFavor
             onPress={onToggleFavorite}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             accessibilityRole="button"
-            accessibilityLabel={book.favorite ? 'Remove from favorites' : 'Add to favorites'}
+            accessibilityLabel={movie.favorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <Ionicons
-              name={book.favorite ? 'heart' : 'heart-outline'}
+              name={movie.favorite ? 'heart' : 'heart-outline'}
               size={24}
-              color={book.favorite ? colors.favorite : colors.textMuted}
+              color={movie.favorite ? colors.favorite : colors.textMuted}
             />
           </TouchableOpacity>
         </View>
@@ -77,21 +85,21 @@ export const BookItem: React.FC<BookItemProps> = ({ book, onPress, onToggleFavor
         <View style={styles.badgesRow}>
           {/* Genre Badge */}
           <View style={[styles.genreBadge, { backgroundColor: genreStyle.bg }]}>
-            <Text style={[styles.genreText, { color: genreStyle.text }]}>{book.genre}</Text>
+            <Text style={[styles.genreText, { color: genreStyle.text }]}>{movie.genre}</Text>
           </View>
 
           {/* Status Badge */}
           <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
             <Text style={[styles.statusText, { color: statusStyle.text }]}>
-              {book.status}
+              {movie.status}
             </Text>
           </View>
 
           {/* Rating (if provided) */}
-          {book.rating !== null && (
+          {movie.rating !== null && (
             <View style={styles.ratingBadge}>
               <Ionicons name="star" size={12} color={colors.ratingStar} style={styles.badgeIcon} />
-              <Text style={styles.ratingText}>{book.rating}/5</Text>
+              <Text style={styles.ratingText}>{movie.rating}/5</Text>
             </View>
           )}
 
@@ -135,7 +143,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     letterSpacing: 0.1,
   },
-  author: {
+  director: {
     fontSize: 13,
     color: colors.textSecondary,
     marginTop: 3,

@@ -2,27 +2,27 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { BookSummary, Status } from '../types';
+import { MovieSummary, Status } from '../types';
 import { colors, shadows } from '../theme/colors';
 
 interface SummaryCardProps {
-  summary: BookSummary;
+  summary: MovieSummary;
 }
 
 export const SummaryCard: React.FC<SummaryCardProps> = ({ summary }) => {
   const getStatusBadgeStyle = (status: Status) => {
     switch (status) {
-      case 'To Read':
+      case 'To Watch':
         return {
           bg: colors.statusToReadBg,
           text: colors.statusToRead,
           icon: 'bookmark-outline' as const,
         };
-      case 'Reading':
+      case 'Watching':
         return {
           bg: colors.statusReadingBg,
           text: colors.statusReading,
-          icon: 'book-outline' as const,
+          icon: 'play-outline' as const,
         };
       case 'Finished':
         return {
@@ -37,12 +37,12 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ summary }) => {
     <View style={styles.container}>
       <View style={styles.titleRow}>
         <Ionicons name="sparkles" size={16} color={colors.accent} style={styles.sparkleIcon} />
-        <Text style={styles.sectionTitle}>Library Overview</Text>
+        <Text style={styles.sectionTitle}>Cinema Overview</Text>
       </View>
 
-      {/* Main Stats: Book Count & Favorite Count */}
+      {/* Main Stats: Movie Count & Favorite Count */}
       <View style={styles.topStatsRow}>
-        {/* Book Count Card */}
+        {/* Movie Count Card */}
         <View style={styles.statBox}>
           <LinearGradient
             colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
@@ -50,12 +50,12 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ summary }) => {
             end={{ x: 1, y: 1 }}
             style={styles.statIconBadge}
           >
-            <Ionicons name="library" size={18} color={colors.textInverse} />
+            <Ionicons name="film" size={18} color={colors.textInverse} />
           </LinearGradient>
           <View style={styles.statInfo}>
-            <Text style={styles.statLabel}>Total Books</Text>
-            <Text testID="book-count" style={styles.statNumber}>
-              {summary.bookCount}
+            <Text style={styles.statLabel}>Total Movies</Text>
+            <Text testID="movie-count" style={styles.statNumber}>
+              {summary.movieCount}
             </Text>
           </View>
         </View>
@@ -76,7 +76,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ summary }) => {
 
       {/* Status Breakdown Section */}
       <View style={styles.statusDivider} />
-      <Text style={styles.statusSectionHeading}>Reading Progress</Text>
+      <Text style={styles.statusSectionHeading}>Watch Status</Text>
       <View style={styles.statusBreakdownRow}>
         {summary.statusCounts.map((item) => {
           const badge = getStatusBadgeStyle(item.status);

@@ -20,11 +20,11 @@ export const Header: React.FC<HeaderProps> = ({ userEmail, userName, onLogout })
           end={{ x: 1, y: 1 }}
           style={styles.logoBadge}
         >
-          <Ionicons name="book" size={20} color={colors.textInverse} />
+          <Ionicons name="film" size={20} color={colors.textInverse} />
         </LinearGradient>
         <View style={styles.titleContainer}>
           <Text style={styles.appName} numberOfLines={1}>
-            {userName ? `BookShelf • ${userName}` : 'BookShelf'}
+            {userName ? `CineList • ${userName}` : 'CineList'}
           </Text>
           {Boolean(userEmail) && (
             <Text style={styles.userEmail} numberOfLines={1} ellipsizeMode="middle">

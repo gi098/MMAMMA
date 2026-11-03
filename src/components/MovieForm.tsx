@@ -9,13 +9,13 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { BookFormData, Genre, Status, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
-import { validateBookForm } from '../utils/validation';
+import { MovieFormData, Genre, Status, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
+import { validateMovieForm } from '../utils/validation';
 import { colors, shadows } from '../theme/colors';
 
-interface BookFormProps {
-  initialValues?: BookFormData;
-  onSubmit: (formData: BookFormData) => Promise<{ success: boolean; error: string | null }>;
+interface MovieFormProps {
+  initialValues?: MovieFormData;
+  onSubmit: (formData: MovieFormData) => Promise<{ success: boolean; error: string | null }>;
   onCancel?: () => void;
   submitButtonText?: string;
   mode?: 'add' | 'edit';
@@ -24,26 +24,26 @@ interface BookFormProps {
   onClearMessages?: () => void;
 }
 
-const defaultValues: BookFormData = {
+const defaultValues: MovieFormData = {
   title: '',
-  author: '',
+  director: '',
   genre: '',
   status: '',
   rating: '',
   notes: '',
 };
 
-export const BookForm: React.FC<BookFormProps> = ({
+export const MovieForm: React.FC<MovieFormProps> = ({
   initialValues = defaultValues,
   onSubmit,
   onCancel,
-  submitButtonText = 'Add Book',
+  submitButtonText = 'Add Movie',
   mode = 'add',
   serverError = null,
   serverSuccess = null,
   onClearMessages,
 }) => {
-  const [formData, setFormData] = useState<BookFormData>(initialValues);
+  const [formData, setFormData] = useState<MovieFormData>(initialValues);
   const [localError, setLocalError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
@@ -51,7 +51,7 @@ export const BookForm: React.FC<BookFormProps> = ({
     setFormData(initialValues);
   }, [initialValues]);
 
-  const handleChange = (field: keyof BookFormData, value: string) => {
+  const handleChange = (field: keyof MovieFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (localError) setLocalError(null);
     if (onClearMessages) onClearMessages();
@@ -62,7 +62,7 @@ export const BookForm: React.FC<BookFormProps> = ({
     if (onClearMessages) onClearMessages();
 
     // Client-side validation
-    const validation = validateBookForm(formData);
+    const validation = validateMovieForm(formData);
     if (!validation.isValid) {
       setLocalError(validation.firstError);
       return;
@@ -78,20 +78,19 @@ export const BookForm: React.FC<BookFormProps> = ({
     }
   };
 
-  // Determine active error
   const displayError = localError || serverError;
 
   return (
-    <View testID="book-form" style={styles.container}>
+    <View testID="movie-form" style={styles.container}>
       <View style={styles.titleRow}>
         <Ionicons
-          name={mode === 'add' ? 'sparkles' : 'create'}
+          name={mode === 'add' ? 'film-outline' : 'create-outline'}
           size={18}
           color={colors.accent}
           style={styles.formTitleIcon}
         />
         <Text style={styles.formTitle}>
-          {mode === 'add' ? 'Add New Book' : 'Edit Book Details'}
+          {mode === 'add' ? 'Add New Movie' : 'Edit Movie Details'}
         </Text>
       </View>
 
@@ -99,7 +98,7 @@ export const BookForm: React.FC<BookFormProps> = ({
       {Boolean(serverSuccess) && (
         <View style={styles.successBox}>
           <Ionicons name="checkmark-circle" size={18} color={colors.success} />
-          <Text testID="book-success" style={styles.successText}>
+          <Text testID="movie-success" style={styles.successText}>
             {serverSuccess}
           </Text>
         </View>
@@ -109,7 +108,7 @@ export const BookForm: React.FC<BookFormProps> = ({
       {Boolean(displayError) && (
         <View style={styles.errorBox}>
           <Ionicons name="alert-circle" size={18} color={colors.error} />
-          <Text testID="error-book" style={styles.errorText}>
+          <Text testID="error-movie" style={styles.errorText}>
             {displayError}
           </Text>
         </View>
@@ -122,7 +121,7 @@ export const BookForm: React.FC<BookFormProps> = ({
         </Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g. The Great Gatsby"
+          placeholder="e.g. Inception"
           placeholderTextColor={colors.textMuted}
           value={formData.title}
           onChangeText={(val) => handleChange('title', val)}
@@ -131,20 +130,20 @@ export const BookForm: React.FC<BookFormProps> = ({
         <Text style={styles.charHint}>{formData.title.length}/100</Text>
       </View>
 
-      {/* Author Field */}
+      {/* Director Field */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>
-          Author <Text style={styles.requiredMark}>*</Text>
+          Director <Text style={styles.requiredMark}>*</Text>
         </Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g. F. Scott Fitzgerald"
+          placeholder="e.g. Christopher Nolan"
           placeholderTextColor={colors.textMuted}
-          value={formData.author}
-          onChangeText={(val) => handleChange('author', val)}
+          value={formData.director}
+          onChangeText={(val) => handleChange('director', val)}
           maxLength={70}
         />
-        <Text style={styles.charHint}>{formData.author.length}/60</Text>
+        <Text style={styles.charHint}>{formData.director.length}/60</Text>
       </View>
 
       {/* Genre Field */}
@@ -252,7 +251,7 @@ export const BookForm: React.FC<BookFormProps> = ({
         <Text style={styles.label}>Notes (Optional)</Text>
         <TextInput
           style={[styles.input, styles.textArea]}
-          placeholder="Personal thoughts, quotes, or reflections..."
+          placeholder="Personal thoughts, quotes, or review..."
           placeholderTextColor={colors.textMuted}
           value={formData.notes}
           onChangeText={(val) => handleChange('notes', val)}

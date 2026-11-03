@@ -96,7 +96,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
               <Ionicons name="rose-outline" size={28} color={colors.accent} />
             </View>
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join BookShelf to catalog and cherish your favorite reads.</Text>
+            <Text style={styles.subtitle}>Join CineList to catalog and cherish your favorite movies.</Text>
           </View>
 
           {/* Success Banner */}
@@ -113,7 +113,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
           {Boolean(activeError) && (
             <View style={styles.errorBox}>
               <Ionicons name="alert-circle" size={20} color={colors.error} />
-              <Text style={styles.errorText}>{activeError}</Text>
+              <Text testID="error-auth" style={styles.errorText}>{activeError}</Text>
             </View>
           )}
 

@@ -80,10 +80,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
           <View style={styles.header}>
             <View style={styles.iconCircle}>
-              <Ionicons name="book" size={28} color={colors.accent} />
+              <Ionicons name="film-outline" size={28} color={colors.accent} />
             </View>
             <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to access your cherished reading collection.</Text>
+            <Text style={styles.subtitle}>Sign in to access your personal CineList collection.</Text>
           </View>
 
           {/* Error Banner with testID="error-auth" */}

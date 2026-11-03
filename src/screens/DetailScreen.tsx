@@ -12,9 +12,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { RootStackParamList, BookFormData, Status } from '../types';
-import { useBooks } from '../context/BookContext';
-import { BookForm } from '../components/BookForm';
+import { RootStackParamList, MovieFormData, Status } from '../types';
+import { useMovies } from '../context/MovieContext';
+import { MovieForm } from '../components/MovieForm';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { colors, shadows } from '../theme/colors';
 
@@ -27,21 +27,21 @@ interface DetailScreenProps {
 }
 
 export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation }) => {
-  const { bookId } = route.params;
-  const { getBookById, updateBook, deleteBook, toggleFavorite, bookError, clearMessages } =
-    useBooks();
+  const { movieId } = route.params;
+  const { getMovieById, updateMovie, deleteMovie, toggleFavorite, movieError, clearMessages } =
+    useMovies();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
-  const book = getBookById(bookId);
+  const movie = getMovieById(movieId);
 
-  if (!book) {
+  if (!movie) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.notFoundContainer}>
           <Ionicons name="alert-circle-outline" size={48} color={colors.accent} />
-          <Text style={styles.notFoundText}>Book not found</Text>
+          <Text style={styles.notFoundText}>Movie not found</Text>
           <TouchableOpacity
             style={styles.backToListTouch}
             onPress={() => navigation.goBack()}
@@ -51,7 +51,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
               colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
               style={styles.backToListGradient}
             >
-              <Text style={styles.backToListText}>Back to Library</Text>
+              <Text style={styles.backToListText}>Back to Movies</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -61,9 +61,9 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
 
   const getStatusBadge = (status: Status) => {
     switch (status) {
-      case 'To Read':
+      case 'To Watch':
         return { bg: colors.statusToReadBg, text: colors.statusToRead };
-      case 'Reading':
+      case 'Watching':
         return { bg: colors.statusReadingBg, text: colors.statusReading };
       case 'Finished':
         return { bg: colors.statusFinishedBg, text: colors.statusFinished };
@@ -71,23 +71,31 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
   };
 
   const getGenreBadge = () => {
-    switch (book.genre) {
-      case 'Fiction':
-        return { bg: colors.genreFictionBg, text: colors.genreFiction };
-      case 'Non-Fiction':
-        return { bg: colors.genreNonFictionBg, text: colors.genreNonFiction };
-      case 'Academic':
-        return { bg: colors.genreAcademicBg, text: colors.genreAcademic };
+    switch (movie.genre) {
+      case 'Action':
+        return { bg: colors.genreActionBg, text: colors.genreAction };
+      case 'Comedy':
+        return { bg: colors.genreComedyBg, text: colors.genreComedy };
+      case 'Drama':
+        return { bg: colors.genreDramaBg, text: colors.genreDrama };
+      case 'Sci-Fi':
+        return { bg: colors.genreSciFiBg, text: colors.genreSciFi };
+      case 'Animation':
+        return { bg: colors.genreAnimationBg, text: colors.genreAnimation };
+      case 'Romance':
+        return { bg: colors.genreRomanceBg, text: colors.genreRomance };
+      case 'Documentary':
+        return { bg: colors.genreDocumentaryBg, text: colors.genreDocumentary };
       default:
         return { bg: colors.genreOtherBg, text: colors.genreOther };
     }
   };
 
-  const statusStyle = getStatusBadge(book.status);
+  const statusStyle = getStatusBadge(movie.status);
   const genreStyle = getGenreBadge();
 
-  const handleUpdate = async (formData: BookFormData) => {
-    const res = await updateBook(book.id, formData);
+  const handleUpdate = async (formData: MovieFormData) => {
+    const res = await updateMovie(movie.id, formData);
     if (res.success) {
       setIsEditing(false);
       clearMessages();
@@ -97,7 +105,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
 
   const handleDeleteConfirm = async () => {
     setShowDeleteModal(false);
-    const res = await deleteBook(book.id);
+    const res = await deleteMovie(movie.id);
     if (res.success) {
       navigation.goBack();
     }
@@ -117,17 +125,17 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
           <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.topBarTitle}>
-          {isEditing ? 'Edit Book' : 'Book Details'}
+          {isEditing ? 'Edit Movie' : 'Movie Details'}
         </Text>
         <TouchableOpacity
           style={styles.navIconButton}
-          onPress={() => toggleFavorite(book.id)}
+          onPress={() => toggleFavorite(movie.id)}
           activeOpacity={0.7}
         >
           <Ionicons
-            name={book.favorite ? 'heart' : 'heart-outline'}
+            name={movie.favorite ? 'heart' : 'heart-outline'}
             size={24}
-            color={book.favorite ? colors.favorite : colors.textMuted}
+            color={movie.favorite ? colors.favorite : colors.textMuted}
           />
         </TouchableOpacity>
       </View>
@@ -135,14 +143,14 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {isEditing ? (
           /* Edit Mode */
-          <BookForm
+          <MovieForm
             initialValues={{
-              title: book.title,
-              author: book.author,
-              genre: book.genre,
-              status: book.status,
-              rating: book.rating !== null ? book.rating.toString() : '',
-              notes: book.notes || '',
+              title: movie.title,
+              director: movie.director,
+              genre: movie.genre,
+              status: movie.status,
+              rating: movie.rating !== null ? movie.rating.toString() : '',
+              notes: movie.notes || '',
             }}
             onSubmit={handleUpdate}
             onCancel={() => {
@@ -151,7 +159,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
             }}
             submitButtonText="Save Changes"
             mode="edit"
-            serverError={bookError}
+            serverError={movieError}
             onClearMessages={clearMessages}
           />
         ) : (
@@ -163,27 +171,27 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
                 colors={[colors.primaryGradientStart, colors.primaryGradientEnd]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.bookIconBadge}
+                style={styles.movieIconBadge}
               >
-                <Ionicons name="book" size={32} color={colors.textInverse} />
+                <Ionicons name="film" size={32} color={colors.textInverse} />
               </LinearGradient>
 
-              <Text style={styles.title}>{book.title}</Text>
-              <Text style={styles.author}>by {book.author}</Text>
+              <Text style={styles.title}>{movie.title}</Text>
+              <Text style={styles.director}>Directed by {movie.director}</Text>
 
               {/* Status and Genre Badges */}
               <View style={styles.badgesRow}>
                 <View style={[styles.genreBadge, { backgroundColor: genreStyle.bg }]}>
-                  <Text style={[styles.genreText, { color: genreStyle.text }]}>{book.genre}</Text>
+                  <Text style={[styles.genreText, { color: genreStyle.text }]}>{movie.genre}</Text>
                 </View>
 
                 <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
                   <Text style={[styles.statusText, { color: statusStyle.text }]}>
-                    {book.status}
+                    {movie.status}
                   </Text>
                 </View>
 
-                {book.favorite && (
+                {movie.favorite && (
                   <View style={styles.favBadge}>
                     <Ionicons name="heart" size={13} color={colors.favorite} style={styles.badgeIcon} />
                     <Text style={styles.favBadgeText}>Favorite</Text>
@@ -195,18 +203,18 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
             {/* Rating Section */}
             <View style={styles.infoSection}>
               <Text style={styles.sectionHeading}>Rating</Text>
-              {book.rating !== null ? (
+              {movie.rating !== null ? (
                 <View style={styles.ratingRow}>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Ionicons
                       key={star}
-                      name={star <= (book.rating ?? 0) ? 'star' : 'star-outline'}
+                      name={star <= (movie.rating ?? 0) ? 'star' : 'star-outline'}
                       size={22}
                       color={colors.ratingStar}
                       style={styles.starIcon}
                     />
                   ))}
-                  <Text style={styles.ratingScore}>{book.rating} / 5</Text>
+                  <Text style={styles.ratingScore}>{movie.rating} / 5</Text>
                 </View>
               ) : (
                 <Text style={styles.emptyFieldText}>No rating provided</Text>
@@ -215,11 +223,11 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
 
             {/* Notes Section */}
             <View style={styles.infoSection}>
-              <Text style={styles.sectionHeading}>Personal Notes</Text>
-              {book.notes && book.notes.trim().length > 0 ? (
-                <Text style={styles.notesText}>{book.notes}</Text>
+              <Text style={styles.sectionHeading}>Personal Notes & Review</Text>
+              {movie.notes && movie.notes.trim().length > 0 ? (
+                <Text style={styles.notesText}>{movie.notes}</Text>
               ) : (
-                <Text style={styles.emptyFieldText}>No notes recorded for this book.</Text>
+                <Text style={styles.emptyFieldText}>No notes recorded for this movie.</Text>
               )}
             </View>
 
@@ -237,7 +245,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
                   style={styles.editGradient}
                 >
                   <Ionicons name="create-outline" size={18} color={colors.textInverse} style={styles.btnIcon} />
-                  <Text style={styles.editButtonText}>Edit Book</Text>
+                  <Text style={styles.editButtonText}>Edit Movie</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -257,8 +265,8 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route, navigation })
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         visible={showDeleteModal}
-        title="Delete Book"
-        message={`Are you sure you want to remove "${book.title}" from your bookshelf? This action cannot be undone.`}
+        title="Delete Movie"
+        message={`Are you sure you want to remove "${movie.title}" from your cinema collection? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         onConfirm={handleDeleteConfirm}
@@ -336,7 +344,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     ...shadows.card,
   },
-  bookIconBadge: {
+  movieIconBadge: {
     width: 68,
     height: 68,
     borderRadius: 22,
@@ -353,7 +361,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     lineHeight: 28,
   },
-  author: {
+  director: {
     fontSize: 15,
     color: colors.textSecondary,
     fontStyle: 'italic',

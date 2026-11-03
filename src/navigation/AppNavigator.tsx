@@ -17,7 +17,7 @@ export const AppNavigator: React.FC = () => {
   const { currentUser, loading } = useAuth();
 
   if (loading) {
-    return <LoadingView message="Connecting to BookShelf..." />;
+    return <LoadingView message="Connecting to CineList..." />;
   }
 
   return (
@@ -46,4 +46,3 @@ export const AppNavigator: React.FC = () => {
     </NavigationContainer>
   );
 };
-

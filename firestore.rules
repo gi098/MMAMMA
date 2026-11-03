@@ -12,11 +12,20 @@ service cloud.firestore {
     }
 
     function isValidGenre(genre) {
-      return genre in ['Fiction', 'Non-Fiction', 'Academic', 'Other'];
+      return genre in [
+        'Action',
+        'Comedy',
+        'Drama',
+        'Sci-Fi',
+        'Animation',
+        'Romance',
+        'Documentary',
+        'Other'
+      ];
     }
 
     function isValidStatus(status) {
-      return status in ['To Read', 'Reading', 'Finished'];
+      return status in ['To Watch', 'Watching', 'Finished'];
     }
 
     function isValidRating(rating) {
@@ -30,24 +39,24 @@ service cloud.firestore {
         && title.trim().size() > 0;
     }
 
-    function isValidAuthor(author) {
-      return author is string 
-        && author.size() > 0 
-        && author.size() <= 60
-        && author.trim().size() > 0;
+    function isValidDirector(director) {
+      return director is string 
+        && director.size() > 0 
+        && director.size() <= 60
+        && director.trim().size() > 0;
     }
 
     function isValidNotes(notes) {
       return notes is string && notes.size() <= 300;
     }
 
-    function isValidBook(data) {
-      return data.keys().hasAll(['id', 'userId', 'title', 'author', 'genre', 'status', 'rating', 'favorite', 'notes', 'createdAt'])
-        && data.keys().hasOnly(['id', 'userId', 'title', 'author', 'genre', 'status', 'rating', 'favorite', 'notes', 'createdAt'])
+    function isValidMovie(data) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'director', 'genre', 'status', 'rating', 'favorite', 'notes', 'createdAt'])
+        && data.keys().hasOnly(['id', 'userId', 'title', 'director', 'genre', 'status', 'rating', 'favorite', 'notes', 'createdAt'])
         && data.id is string
         && data.userId == request.auth.uid
         && isValidTitle(data.title)
-        && isValidAuthor(data.author)
+        && isValidDirector(data.director)
         && isValidGenre(data.genre)
         && isValidStatus(data.status)
         && isValidRating(data.rating)
@@ -55,27 +64,26 @@ service cloud.firestore {
         && isValidNotes(data.notes);
     }
 
-    // Books collection
-    match /books/{bookId} {
-      // Only the owner can read their own books
+    // Movies collection
+    match /movies/{movieId} {
+      // Only the owner can read their own movies
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
 
       // Create: Owner only, matches auth uid, valid schema, docId matches data.id
       allow create: if isAuthenticated()
         && request.resource.data.userId == request.auth.uid
-        && request.resource.data.id == bookId
-        && isValidBook(request.resource.data);
+        && request.resource.data.id == movieId
+        && isValidMovie(request.resource.data);
 
       // Update: Owner only, cannot change owner or document ID, valid schema
       allow update: if isAuthenticated()
         && resource.data.userId == request.auth.uid
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.id == resource.data.id
-        && isValidBook(request.resource.data);
+        && isValidMovie(request.resource.data);
 
       // Delete: Owner only
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
   }
 }
-

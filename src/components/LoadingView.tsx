@@ -6,7 +6,7 @@ interface LoadingViewProps {
   message?: string;
 }
 
-export const LoadingView: React.FC<LoadingViewProps> = ({ message = 'Loading BookShelf...' }) => {
+export const LoadingView: React.FC<LoadingViewProps> = ({ message = 'Loading CineList...' }) => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color={colors.primary} />

@@ -10,14 +10,14 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { RootStackParamList, Book } from '../types';
+import { RootStackParamList, Movie } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { useBooks } from '../context/BookContext';
+import { useMovies } from '../context/MovieContext';
 import { Header } from '../components/Header';
 import { SummaryCard } from '../components/SummaryCard';
 import { FilterBar } from '../components/FilterBar';
-import { BookItem } from '../components/BookItem';
-import { BookForm } from '../components/BookForm';
+import { MovieItem } from '../components/MovieItem';
+import { MovieForm } from '../components/MovieForm';
 import { LoadingView } from '../components/LoadingView';
 import { colors, shadows } from '../theme/colors';
 
@@ -30,21 +30,21 @@ interface ListScreenProps {
 export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
   const { currentUser, logout } = useAuth();
   const {
-    filteredBooks,
+    filteredMovies,
     filters,
     summary,
     loading,
-    bookError,
-    bookSuccess,
+    movieError,
+    movieSuccess,
     setGenreFilter,
     setStatusFilter,
     setFavoritesOnly,
     setSearchQuery,
     clearFilters,
-    addBook,
+    addMovie,
     toggleFavorite,
     clearMessages,
-  } = useBooks();
+  } = useMovies();
 
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
 
@@ -55,13 +55,13 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
 
   const renderHeader = () => (
     <View>
-      {/* Summary Component with book-count and favorite-count */}
+      {/* Summary Component with movie-count and favorite-count */}
       <SummaryCard summary={summary} />
 
-      {/* Add Book Toggle Button */}
-      <View style={styles.addBookBar}>
+      {/* Add Movie Toggle Button */}
+      <View style={styles.addMovieBar}>
         <TouchableOpacity
-          style={[styles.addBookToggleBtn, showAddForm && styles.addBookToggleBtnActive]}
+          style={[styles.addMovieToggleBtn, showAddForm && styles.addMovieToggleBtnActive]}
           onPress={() => setShowAddForm(!showAddForm)}
           activeOpacity={0.8}
         >
@@ -73,27 +73,27 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
           />
           <Text
             style={[
-              styles.addBookToggleText,
+              styles.addMovieToggleText,
               showAddForm && { color: colors.accent },
             ]}
           >
-            {showAddForm ? 'Close Add Form' : 'Add New Book'}
+            {showAddForm ? 'Close Add Form' : 'Add New Movie'}
           </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Add Book Form Component */}
+      {/* Add Movie Form Component */}
       {showAddForm && (
-        <BookForm
+        <MovieForm
           onSubmit={async (formData) => {
-            const res = await addBook(formData);
+            const res = await addMovie(formData);
             return res;
           }}
           onCancel={() => setShowAddForm(false)}
-          submitButtonText="Add Book"
+          submitButtonText="Add Movie"
           mode="add"
-          serverError={bookError}
-          serverSuccess={bookSuccess}
+          serverError={movieError}
+          serverSuccess={movieSuccess}
           onClearMessages={clearMessages}
         />
       )}
@@ -108,14 +108,14 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
         onClear={clearFilters}
       />
 
-      {/* Books Section Title */}
+      {/* Movies Section Title */}
       <View style={styles.listHeaderRow}>
         <View style={styles.listHeadingWrapper}>
           <Ionicons name="sparkles" size={14} color={colors.accent} style={styles.headingSparkle} />
-          <Text style={styles.listHeading}>Book Collection</Text>
+          <Text style={styles.listHeading}>Movie Collection</Text>
         </View>
         <Text style={styles.listSubheading}>
-          {filteredBooks.length} {filteredBooks.length === 1 ? 'book' : 'books'}
+          {filteredMovies.length} {filteredMovies.length === 1 ? 'movie' : 'movies'}
         </Text>
       </View>
     </View>
@@ -123,30 +123,30 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
 
   const renderEmptyComponent = () => {
     if (loading) {
-      return <LoadingView message="Loading your books..." />;
+      return <LoadingView message="Loading your movies..." />;
     }
 
     return (
       <View style={styles.emptyContainer}>
         <View style={styles.emptyIconBadge}>
-          <Ionicons name="rose-outline" size={38} color={colors.primary} />
+          <Ionicons name="film-outline" size={38} color={colors.primary} />
         </View>
-        <Text testID="books-empty" style={styles.emptyTitle}>
-          No books found
+        <Text testID="movies-empty" style={styles.emptyTitle}>
+          No movies found
         </Text>
         <Text style={styles.emptySubtitle}>
           {filters.search || filters.genre !== 'All' || filters.status !== 'All' || filters.favoritesOnly
-            ? 'Try adjusting your search or filters to see your books.'
-            : 'Start building your romantic reading nook by tapping "Add New Book" above.'}
+            ? 'Try adjusting your search or filters to see your movies.'
+            : 'Start building your personal cinema sanctuary by tapping "Add New Movie" above.'}
         </Text>
       </View>
     );
   };
 
-  const renderBookItem = ({ item }: { item: Book }) => (
-    <BookItem
-      book={item}
-      onPress={() => navigation.navigate('Detail', { bookId: item.id })}
+  const renderMovieItem = ({ item }: { item: Movie }) => (
+    <MovieItem
+      movie={item}
+      onPress={() => navigation.navigate('Detail', { movieId: item.id })}
       onToggleFavorite={() => toggleFavorite(item.id)}
     />
   );
@@ -161,9 +161,9 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
       />
 
       <FlatList
-        data={filteredBooks}
+        data={filteredMovies}
         keyExtractor={(item) => item.id}
-        renderItem={renderBookItem}
+        renderItem={renderMovieItem}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmptyComponent}
         contentContainerStyle={styles.listContent}
@@ -182,11 +182,11 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 36,
   },
-  addBookBar: {
+  addMovieBar: {
     marginHorizontal: 16,
     marginVertical: 4,
   },
-  addBookToggleBtn: {
+  addMovieToggleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -197,14 +197,14 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     ...shadows.soft,
   },
-  addBookToggleBtnActive: {
+  addMovieToggleBtnActive: {
     backgroundColor: colors.errorBg,
     borderColor: colors.errorBorder,
   },
   addIcon: {
     marginRight: 6,
   },
-  addBookToggleText: {
+  addMovieToggleText: {
     fontSize: 14,
     fontWeight: '800',
     color: colors.accent,

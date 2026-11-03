@@ -1,4 +1,4 @@
-import { BookFormData, Genre, Status, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
+import { MovieFormData, Genre, Status, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -8,13 +8,14 @@ export interface ValidationResult {
 
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.trim());
+  return emailRegex.test((email || '').trim());
 }
 
 export function validateRegisterForm(
   email: string,
   password: string,
-  confirmPassword: string
+  confirmPassword: string,
+  _displayName?: string
 ): ValidationResult {
   const errors: Record<string, string> = {};
 
@@ -65,7 +66,7 @@ export function validateLoginForm(email: string, password: string): ValidationRe
   };
 }
 
-export function validateBookForm(formData: BookFormData): ValidationResult {
+export function validateMovieForm(formData: MovieFormData): ValidationResult {
   const errors: Record<string, string> = {};
 
   // Title validation
@@ -76,12 +77,12 @@ export function validateBookForm(formData: BookFormData): ValidationResult {
     errors.title = 'Title must be at most 100 characters';
   }
 
-  // Author validation
-  const authorTrimmed = (formData.author || '').trim();
-  if (!authorTrimmed) {
-    errors.author = 'Author is required';
-  } else if (formData.author.length > 60) {
-    errors.author = 'Author must be at most 60 characters';
+  // Director validation
+  const directorTrimmed = (formData.director || '').trim();
+  if (!directorTrimmed) {
+    errors.director = 'Director is required';
+  } else if (formData.director.length > 60) {
+    errors.director = 'Director must be at most 60 characters';
   }
 
   // Genre validation

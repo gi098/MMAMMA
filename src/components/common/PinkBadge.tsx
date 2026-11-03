@@ -33,38 +33,58 @@ export const PinkBadge: React.FC<PinkBadgeProps> = ({
 
   if (type === 'genre' && genre) {
     switch (genre) {
-      case 'Fiction':
-        bg = colors.genreFictionBg;
-        text = colors.genreFiction;
-        badgeIcon = badgeIcon || 'rose-outline';
+      case 'Action':
+        bg = colors.genreActionBg;
+        text = colors.genreAction;
+        badgeIcon = badgeIcon || 'flame-outline';
         break;
-      case 'Non-Fiction':
-        bg = colors.genreNonFictionBg;
-        text = colors.genreNonFiction;
+      case 'Comedy':
+        bg = colors.genreComedyBg;
+        text = colors.genreComedy;
+        badgeIcon = badgeIcon || 'happy-outline';
+        break;
+      case 'Drama':
+        bg = colors.genreDramaBg;
+        text = colors.genreDrama;
+        badgeIcon = badgeIcon || 'sparkles-outline';
+        break;
+      case 'Sci-Fi':
+        bg = colors.genreSciFiBg;
+        text = colors.genreSciFi;
         badgeIcon = badgeIcon || 'planet-outline';
         break;
-      case 'Academic':
-        bg = colors.genreAcademicBg;
-        text = colors.genreAcademic;
-        badgeIcon = badgeIcon || 'school-outline';
+      case 'Animation':
+        bg = colors.genreAnimationBg;
+        text = colors.genreAnimation;
+        badgeIcon = badgeIcon || 'color-wand-outline';
+        break;
+      case 'Romance':
+        bg = colors.genreRomanceBg;
+        text = colors.genreRomance;
+        badgeIcon = badgeIcon || 'heart-outline';
+        break;
+      case 'Documentary':
+        bg = colors.genreDocumentaryBg;
+        text = colors.genreDocumentary;
+        badgeIcon = badgeIcon || 'videocam-outline';
         break;
       case 'Other':
         bg = colors.genreOtherBg;
         text = colors.genreOther;
-        badgeIcon = badgeIcon || 'sparkles-outline';
+        badgeIcon = badgeIcon || 'film-outline';
         break;
     }
   } else if (type === 'status' && status) {
     switch (status) {
-      case 'To Read':
-        bg = colors.statusToReadBg;
-        text = colors.statusToRead;
-        badgeIcon = badgeIcon || 'bookmark-outline';
+      case 'To Watch':
+        bg = colors.statusToWatchBg;
+        text = colors.statusToWatch;
+        badgeIcon = badgeIcon || 'time-outline';
         break;
-      case 'Reading':
-        bg = colors.statusReadingBg;
-        text = colors.statusReading;
-        badgeIcon = badgeIcon || 'book-outline';
+      case 'Watching':
+        bg = colors.statusWatchingBg;
+        text = colors.statusWatching;
+        badgeIcon = badgeIcon || 'play-circle-outline';
         break;
       case 'Finished':
         bg = colors.statusFinishedBg;
@@ -98,9 +118,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(242, 220, 226, 0.6)',
+    borderRadius: 12,
+    alignSelf: 'flex-start',
   },
   icon: {
     marginRight: 4,
@@ -108,7 +127,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: '700',
-    letterSpacing: 0.1,
+    letterSpacing: 0.2,
   },
 });
-

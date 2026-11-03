@@ -52,19 +52,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             end={{ x: 1, y: 1 }}
             style={styles.brandIconWrapper}
           >
-            <Ionicons name="book" size={36} color={colors.textInverse} />
+            <Ionicons name="film" size={36} color={colors.textInverse} />
           </LinearGradient>
 
           <View style={styles.titleBadgeRow}>
             <Ionicons name="sparkles" size={16} color={colors.accent} style={styles.sparkleIcon} />
             <Text testID="home-title" style={styles.title}>
-              BookShelf
+              CineList
             </Text>
             <Ionicons name="sparkles" size={16} color={colors.accent} style={styles.sparkleIcon} />
           </View>
 
           <Text style={styles.tagline}>
-            Your cozy romantic reading sanctuary to track, curate, and cherish every story.
+            Your cozy romantic cinema sanctuary to discover, track, and cherish every film.
           </Text>
         </View>
 
@@ -73,21 +73,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text style={styles.sectionHeading}>Highlights</Text>
 
           <FeatureCard
-            icon="library-outline"
-            title="Track your books"
-            description="Build your personal reading sanctuary, record notes, and keep every title cataloged."
+            icon="film-outline"
+            title="Track your movies"
+            description="Build your personal cinema watchlist, record reviews, and keep every director cataloged."
           />
 
           <FeatureCard
             icon="filter-outline"
             title="Sort by status"
-            description="Seamlessly organize what you are currently reading, want to read, or have completed."
+            description="Seamlessly organize what you plan to watch, currently watching, or finished viewing."
           />
 
           <FeatureCard
             icon="heart-outline"
             title="Rate your favorites"
-            description="Give ratings from 0 to 5, bookmark cherished titles, and curate your top collection."
+            description="Give ratings from 0 to 5, bookmark cherished titles, and curate your top favorites."
           />
         </View>
 

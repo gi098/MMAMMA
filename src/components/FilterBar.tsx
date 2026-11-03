@@ -9,11 +9,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BookFilters, GenreFilter, StatusFilter, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
+import { MovieFilters, GenreFilter, StatusFilter, GENRE_OPTIONS, STATUS_OPTIONS } from '../types';
 import { colors, shadows } from '../theme/colors';
 
 interface FilterBarProps {
-  filters: BookFilters;
+  filters: MovieFilters;
   onGenreChange: (genre: GenreFilter) => void;
   onStatusChange: (status: StatusFilter) => void;
   onFavoritesOnlyChange: (favOnly: boolean) => void;
@@ -48,7 +48,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           <Ionicons name="search" size={18} color={colors.textSecondary} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search by Title or Author..."
+            placeholder="Search by Title or Director..."
             placeholderTextColor={colors.textMuted}
             value={filters.search}
             onChangeText={onSearchChange}
