@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -29,7 +29,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onSearchChange,
   onClear,
 }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const [localSearch, setLocalSearch] = useState<string>(filters.search);
+
+  useEffect(() => {
+    setLocalSearch(filters.search);
+  }, [filters.search]);
+
+  const handleSearch = (text: string) => {
+    setLocalSearch(text);
+    onSearchChange(text);
+  };
 
   const allGenres: GenreFilter[] = ['All', ...GENRE_OPTIONS];
   const allStatuses: StatusFilter[] = ['All', ...STATUS_OPTIONS];
@@ -50,13 +60,20 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             style={styles.searchInput}
             placeholder="Search by Title or Director..."
             placeholderTextColor={colors.textMuted}
-            value={filters.search}
-            onChangeText={onSearchChange}
+            value={localSearch}
+            onChangeText={handleSearch}
             autoCapitalize="none"
             autoCorrect={false}
+            returnKeyType="search"
           />
-          {filters.search.length > 0 && (
-            <TouchableOpacity onPress={() => onSearchChange('')} style={styles.clearSearchButton}>
+          {localSearch.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setLocalSearch('');
+                onSearchChange('');
+              }}
+              style={styles.clearSearchButton}
+            >
               <Ionicons name="close-circle" size={18} color={colors.textSecondary} />
             </TouchableOpacity>
           )}
@@ -96,7 +113,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       </View>
 
       {/* Expandable Filter Details (Genre & Status) */}
-      {(isExpanded || hasActiveFilters) && (
+      {isExpanded && (
         <View style={styles.filterDetails}>
           {/* Genre Filter */}
           <View style={styles.filterSection}>
@@ -122,7 +139,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
           {/* Status Filter */}
           <View style={styles.filterSection}>
-            <Text style={styles.filterHeading}>Status</Text>
+            <Text style={styles.filterHeading}>Watch Status</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
               {allStatuses.map((s) => {
                 const isSelected = filters.status === s;
@@ -144,9 +161,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
           {/* Clear Filters Button */}
           {hasActiveFilters && (
-            <TouchableOpacity style={styles.clearAllButton} onPress={onClear} activeOpacity={0.7}>
-              <Ionicons name="refresh-outline" size={16} color={colors.accent} />
-              <Text style={styles.clearAllText}>Clear all filters</Text>
+            <TouchableOpacity
+              style={styles.clearAllButton}
+              onPress={() => {
+                setLocalSearch('');
+                onClear();
+              }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="refresh-outline" size={15} color={colors.accent} />
+              <Text style={styles.clearAllText}>Clear All Filters</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -161,7 +185,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 16,
     marginHorizontal: 16,
-    marginVertical: 6,
+    marginTop: 10,
+    marginBottom: 8,
     borderWidth: 1,
     borderColor: colors.border,
     ...shadows.soft,
@@ -190,6 +215,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textPrimary,
     paddingVertical: 0,
+    height: '100%',
   },
   clearSearchButton: {
     padding: 4,
@@ -225,7 +251,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: colors.favoriteBg,
+    backgroundColor: colors.surfaceSecondary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
@@ -237,28 +263,28 @@ const styles = StyleSheet.create({
   },
   filterDetails: {
     marginTop: 12,
-    paddingTop: 12,
+    paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: colors.surfaceSecondary,
   },
   filterSection: {
-    marginBottom: 12,
+    marginBottom: 10,
   },
   filterHeading: {
     fontSize: 12,
     fontWeight: '700',
     color: colors.textSecondary,
-    marginBottom: 8,
     textTransform: 'uppercase',
-    letterSpacing: 0.4,
+    letterSpacing: 0.5,
+    marginBottom: 6,
   },
   chipRow: {
     flexDirection: 'row',
   },
   chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
     backgroundColor: colors.surfaceSecondary,
     marginRight: 8,
     borderWidth: 1,
@@ -269,23 +295,22 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   chipText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     color: colors.textPrimary,
   },
   chipTextSelected: {
     color: colors.textInverse,
+    fontWeight: '700',
   },
   clearAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    marginTop: 4,
-    backgroundColor: colors.secondarySoft,
+    paddingVertical: 8,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: colors.secondarySoft,
+    marginTop: 4,
     gap: 6,
   },
   clearAllText: {

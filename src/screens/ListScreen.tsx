@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  SafeAreaView,
-  FlatList,
   TouchableOpacity,
+  ScrollView,
+  StyleSheet,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList, Movie } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useMovies } from '../context/MovieContext';
@@ -53,74 +53,6 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
     navigation.replace('Home');
   };
 
-  const renderHeader = () => (
-    <View>
-      {/* Summary Component with movie-count and favorite-count */}
-      <SummaryCard summary={summary} />
-
-      {/* Add Movie Toggle Button */}
-      <View style={styles.addMovieBar}>
-        <TouchableOpacity
-          style={[styles.addMovieToggleBtn, showAddForm && styles.addMovieToggleBtnActive]}
-          onPress={() => setShowAddForm(!showAddForm)}
-          activeOpacity={0.8}
-        >
-          <Ionicons
-            name={showAddForm ? 'close-circle-outline' : 'add-circle-outline'}
-            size={20}
-            color={showAddForm ? colors.accent : colors.accent}
-            style={styles.addIcon}
-          />
-          <Text
-            style={[
-              styles.addMovieToggleText,
-              showAddForm && { color: colors.accent },
-            ]}
-          >
-            {showAddForm ? 'Close Add Form' : 'Add New Movie'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Add Movie Form Component */}
-      {showAddForm && (
-        <MovieForm
-          onSubmit={async (formData) => {
-            const res = await addMovie(formData);
-            return res;
-          }}
-          onCancel={() => setShowAddForm(false)}
-          submitButtonText="Add Movie"
-          mode="add"
-          serverError={movieError}
-          serverSuccess={movieSuccess}
-          onClearMessages={clearMessages}
-        />
-      )}
-
-      {/* Filter and Search Bar */}
-      <FilterBar
-        filters={filters}
-        onGenreChange={setGenreFilter}
-        onStatusChange={setStatusFilter}
-        onFavoritesOnlyChange={setFavoritesOnly}
-        onSearchChange={setSearchQuery}
-        onClear={clearFilters}
-      />
-
-      {/* Movies Section Title */}
-      <View style={styles.listHeaderRow}>
-        <View style={styles.listHeadingWrapper}>
-          <Ionicons name="sparkles" size={14} color={colors.accent} style={styles.headingSparkle} />
-          <Text style={styles.listHeading}>Movie Collection</Text>
-        </View>
-        <Text style={styles.listSubheading}>
-          {filteredMovies.length} {filteredMovies.length === 1 ? 'movie' : 'movies'}
-        </Text>
-      </View>
-    </View>
-  );
-
   const renderEmptyComponent = () => {
     if (loading) {
       return <LoadingView message="Loading your movies..." />;
@@ -143,14 +75,6 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
     );
   };
 
-  const renderMovieItem = ({ item }: { item: Movie }) => (
-    <MovieItem
-      movie={item}
-      onPress={() => navigation.navigate('Detail', { movieId: item.id })}
-      onToggleFavorite={() => toggleFavorite(item.id)}
-    />
-  );
-
   return (
     <SafeAreaView testID="list-screen" style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -160,16 +84,89 @@ export const ListScreen: React.FC<ListScreenProps> = ({ navigation }) => {
         onLogout={handleLogout}
       />
 
-      <FlatList
-        data={filteredMovies}
-        keyExtractor={(item) => item.id}
-        renderItem={renderMovieItem}
-        ListHeaderComponent={renderHeader}
-        ListEmptyComponent={renderEmptyComponent}
+      <ScrollView
         contentContainerStyle={styles.listContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-      />
+      >
+        {/* Summary Component with movie-count and favorite-count */}
+        <SummaryCard summary={summary} />
+
+        {/* Add Movie Toggle Button */}
+        <View style={styles.addMovieBar}>
+          <TouchableOpacity
+            style={[styles.addMovieToggleBtn, showAddForm && styles.addMovieToggleBtnActive]}
+            onPress={() => setShowAddForm(!showAddForm)}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name={showAddForm ? 'close-circle-outline' : 'add-circle-outline'}
+              size={20}
+              color={colors.accent}
+              style={styles.addIcon}
+            />
+            <Text
+              style={[
+                styles.addMovieToggleText,
+                showAddForm && { color: colors.accent },
+              ]}
+            >
+              {showAddForm ? 'Close Add Form' : 'Add New Movie'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Add Movie Form Component */}
+        {showAddForm && (
+          <MovieForm
+            onSubmit={async (formData) => {
+              const res = await addMovie(formData);
+              return res;
+            }}
+            onCancel={() => setShowAddForm(false)}
+            submitButtonText="Add Movie"
+            mode="add"
+            serverError={movieError}
+            serverSuccess={movieSuccess}
+            onClearMessages={clearMessages}
+          />
+        )}
+
+        {/* Filter and Search Bar */}
+        <FilterBar
+          filters={filters}
+          onGenreChange={setGenreFilter}
+          onStatusChange={setStatusFilter}
+          onFavoritesOnlyChange={setFavoritesOnly}
+          onSearchChange={setSearchQuery}
+          onClear={clearFilters}
+        />
+
+        {/* Movies Section Title */}
+        <View style={styles.listHeaderRow}>
+          <View style={styles.listHeadingWrapper}>
+            <Ionicons name="sparkles" size={14} color={colors.accent} style={styles.headingSparkle} />
+            <Text style={styles.listHeading}>Movie Collection</Text>
+          </View>
+          <Text style={styles.listSubheading}>
+            {filteredMovies.length} {filteredMovies.length === 1 ? 'movie' : 'movies'}
+          </Text>
+        </View>
+
+        {/* Movies List or Empty View */}
+        {filteredMovies.length === 0 ? (
+          renderEmptyComponent()
+        ) : (
+          filteredMovies.map((movie) => (
+            <MovieItem
+              key={movie.id}
+              movie={movie}
+              onPress={() => navigation.navigate('Detail', { movieId: movie.id })}
+              onToggleFavorite={() => toggleFavorite(movie.id)}
+            />
+          ))
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -180,11 +177,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   listContent: {
-    paddingBottom: 36,
+    paddingBottom: 40,
   },
   addMovieBar: {
-    marginHorizontal: 16,
-    marginVertical: 4,
+    paddingHorizontal: 16,
+    marginTop: 6,
+    marginBottom: 4,
   },
   addMovieToggleBtn: {
     flexDirection: 'row',
